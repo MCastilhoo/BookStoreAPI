@@ -30,6 +30,14 @@ public class BookEntity {
     @Column(name = "AUTHOR")
     private String author;
 
+    @NotNull
+    @Column(name = "PRICE")
+    private float price;
+
+    @NotNull
+    @Column(name = "QUANTITY")
+    private int quantity;
+
 
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
