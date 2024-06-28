@@ -20,7 +20,7 @@ public class BookEntity {
 
     @NotBlank
     @Column(name = "TITLE")
-    private String bookName;
+    private String title;
 
     @NotNull
     @Column(name = "PAGE_NUMBERS")

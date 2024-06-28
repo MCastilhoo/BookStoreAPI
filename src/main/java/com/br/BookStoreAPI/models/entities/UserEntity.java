@@ -23,6 +23,10 @@ public class UserEntity {
     private String userName;
 
     @NotBlank
+    @Column(name = "USER_SURNAME")
+    private String userSurname;
+
+    @NotBlank
     @Column(name = "USER_EMAIL")
     private String userEmail;
 
