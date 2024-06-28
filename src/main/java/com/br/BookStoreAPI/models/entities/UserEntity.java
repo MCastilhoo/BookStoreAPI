@@ -19,12 +19,12 @@ public class UserEntity {
     private UUID userdId;
 
     @NotBlank
-    @Column(name = "USER_NAME")
-    private String userName;
+    @Column(name = "USER_FIRST_NAME")
+    private String userFirstName;
 
     @NotBlank
-    @Column(name = "USER_SURNAME")
-    private String userSurname;
+    @Column(name = "USER_SECOND_NAME")
+    private String userSecondName;
 
     @NotBlank
     @Column(name = "USER_EMAIL")

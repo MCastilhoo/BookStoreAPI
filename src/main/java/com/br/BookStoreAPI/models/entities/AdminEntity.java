@@ -21,12 +21,12 @@ public class AdminEntity {
 
 
     @NotBlank
-    @Column(name = "ADMINISTRATOR_NAME")
-    private String administratorName;
+    @Column(name = "ADMINISTRATOR_FIRST_NAME")
+    private String administratorFirstName;
 
     @NotBlank
-    @Column(name = "ADMINISTRATOR_SURNAME")
-    private String administratorSurname;
+    @Column(name = "ADMINISTRATOR_SECOND_NAME")
+    private String administratorSecondName;
 
     @NotBlank
     @Column(name = "ADMINISTRATOR_EMAIL")
