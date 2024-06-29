@@ -8,7 +8,7 @@ public class AdminFactory {
         return new AdminDetailsResponseDTO(
                 adminEntity.getAdminId(),
                 adminEntity.getAdministratorFirstName(),
-                adminEntity.getAdministratorSecondName(),
+                adminEntity.getAdministratorLastName(),
                 adminEntity.getAdministratorEmail(),
                 adminEntity.getAdministratorPassword(),
                 adminEntity.getCreationDate(),

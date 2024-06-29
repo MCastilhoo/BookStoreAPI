@@ -8,7 +8,7 @@ public class UserFactory {
         return  new UserDetailsResponseDTO(
                 userEntity.getUserdId(),
                 userEntity.getUserFirstName(),
-                userEntity.getUserSecondName(),
+                userEntity.getUserLastName(),
                 userEntity.getUserEmail(),
                 userEntity.getUserPassword(),
                 userEntity.getCreationDate(),

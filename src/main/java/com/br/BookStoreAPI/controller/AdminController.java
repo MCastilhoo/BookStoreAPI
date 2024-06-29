@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/rest/api/admins")
+@RequestMapping("/rest/api/admin")
 public class AdminController {
     @Autowired
     private AdminService adminService;
@@ -35,7 +35,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<List<AdminDetailsResponseDTO>>getAll(@PageableDefault(page = 0, size = 10) Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(adminService.getAllAdmins(pageable));
     }
