@@ -4,7 +4,7 @@ import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookDetailsResponseDTO;
 import com.br.BookStoreAPI.models.entities.BookEntity;
 
 public class BookFactory {
-    public static BookDetailsResponseDTO CreateBookDetails(BookEntity bookEntity) {
+    public static BookDetailsResponseDTO CreateDetails(BookEntity bookEntity) {
         return new BookDetailsResponseDTO(
                 bookEntity.getBookId(),
                 bookEntity.getTitle(),

@@ -25,8 +25,8 @@ public class AdminEntity {
     private String administratorFirstName;
 
     @NotBlank
-    @Column(name = "ADMINISTRATOR_SECOND_NAME")
-    private String administratorSecondName;
+    @Column(name = "ADMINISTRATOR_LAST_NAME")
+    private String administratorLastName;
 
     @NotBlank
     @Column(name = "ADMINISTRATOR_EMAIL")

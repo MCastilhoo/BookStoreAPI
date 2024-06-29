@@ -7,8 +7,8 @@ import java.util.UUID;
 public record UserDetailsResponseDTO(
 
         UUID userId,
-        String userName,
-        String userSurname,
+        String userFirstName,
+        String userLastName,
         String userEmail,
         String userPassword,
         LocalDateTime creationDate,

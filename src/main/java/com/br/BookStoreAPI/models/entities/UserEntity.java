@@ -23,8 +23,8 @@ public class UserEntity {
     private String userFirstName;
 
     @NotBlank
-    @Column(name = "USER_SECOND_NAME")
-    private String userSecondName;
+    @Column(name = "USER_LAST_NAME")
+    private String userLastName;
 
     @NotBlank
     @Column(name = "USER_EMAIL")

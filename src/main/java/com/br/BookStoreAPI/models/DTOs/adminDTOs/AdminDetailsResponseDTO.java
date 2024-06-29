@@ -8,7 +8,7 @@ public record AdminDetailsResponseDTO(
 
         UUID userId,
         String administratorName,
-        String administratorSurname,
+        String administratorLastName,
         String administratorEmail,
         String administratorPassword,
         LocalDateTime creationDate,

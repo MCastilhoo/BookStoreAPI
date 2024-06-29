@@ -13,7 +13,7 @@ public record BookRequestDTO (
 
         @NotNull float price,
 
-        @NotNull float quantity
+        @NotNull int quantity
 
 
 ){}

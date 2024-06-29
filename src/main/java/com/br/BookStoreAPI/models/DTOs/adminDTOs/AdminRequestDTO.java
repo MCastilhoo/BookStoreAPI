@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public record AdminRequestDTO (
 
-    @NotBlank String administratorName,
+    @NotBlank String administratorFirstName,
 
-    @NotBlank String administatorSurname,
+    @NotBlank String administatorLastName,
 
     @NotBlank String administratorEmail,
 
