@@ -21,17 +21,17 @@ import java.util.UUID;
 @RequestMapping("/rest/api/users")
 public class UserController {
     @Autowired
-    private UserService service;
+    private UserService userService;
 
     @PostMapping()
     public ResponseEntity<UserResponseDTO>create(@RequestBody UserRequestDTO dto) {
-        UserResponseDTO responseDTO = service.create(dto);
+        UserResponseDTO responseDTO = userService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO>get(@PathVariable(value = "id") UUID id) {
-        UserResponseDTO result = service.getUserById(id);
+        UserResponseDTO result = userService.getUserById(id);
 
         if(result == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -39,17 +39,17 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDetailsResponseDTO>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.getAll(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAll(pageable));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.OK).body(service.update(dto, id));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, id));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<UserEntity> delete(@PathVariable(value = "id") UUID id) {
-        if(service.delete(id)){
+        if(userService.delete(id)){
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
