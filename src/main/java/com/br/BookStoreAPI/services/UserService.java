@@ -41,7 +41,7 @@ public class UserService {
         return new UserResponseDTO(result.get());
     }
 
-    public List<UserDetailsResponseDTO> getAllUsers(Pageable pageable) {
+    public List<UserDetailsResponseDTO> getAll(Pageable pageable) {
         Page<UserEntity> users = userRepository.findAll(pageable);
 
         List<UserDetailsResponseDTO> results = users
