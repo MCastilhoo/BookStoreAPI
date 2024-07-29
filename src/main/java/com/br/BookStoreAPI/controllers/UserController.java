@@ -1,4 +1,4 @@
-package com.br.BookStoreAPI.controller;
+package com.br.BookStoreAPI.controllers;
 
 
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
@@ -24,7 +24,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping()
-    public ResponseEntity<UserResponseDTO>create(@RequestBody UserRequestDTO dto) {
+    public ResponseEntity<UserResponseDTO>create(@RequestBody UserRequestDTO dto)  {
         UserResponseDTO responseDTO = userService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }

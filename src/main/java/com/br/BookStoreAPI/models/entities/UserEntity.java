@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -34,6 +35,14 @@ public class UserEntity {
     @Column(name = "USER_PASSWORD")
     private String userPassword;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "USER_ROLES",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
+    )
+    private Set<RoleEntity> roles;
+
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
 
@@ -42,8 +51,25 @@ public class UserEntity {
 
 
     @PrePersist
-    protected void onCreate() {creationDate = LocalDateTime.now();}
+    protected void onCreate() {
+        creationDate = LocalDateTime.now();
+    }
 
     @PreUpdate
-    protected void onUpdate(){ modificationDate = LocalDateTime.now();}
+    protected void onUpdate() {
+        modificationDate = LocalDateTime.now();
+    }
+
+    public boolean getRoleByName(String roleName) {
+        try {
+            for (RoleEntity role : roles) {
+                if (role.getRole() == RoleEntity.RoleType.valueOf(roleName)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

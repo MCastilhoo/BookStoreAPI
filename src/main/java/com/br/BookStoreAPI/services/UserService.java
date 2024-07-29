@@ -5,35 +5,59 @@ import com.br.BookStoreAPI.factories.UserFactory;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
+import com.br.BookStoreAPI.models.entities.RoleEntity;
 import com.br.BookStoreAPI.models.entities.UserEntity;
+import com.br.BookStoreAPI.repositories.RoleRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    @Autowired
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository) {this.userRepository = userRepository;}
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
-    public UserResponseDTO create(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO create(UserRequestDTO dto) {
+        var role = roleRepository.findByName(RoleEntity.RoleType.EMPLOYEE.name());
+
+        var userFromDb = userRepository.findByUserEmail(dto.userEmail());
+
+        if (userFromDb.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(userRequestDTO, userEntity);
+        userEntity.setUserFirstName(dto.userFirstName());
+        userEntity.setUserLastName(dto.userLastName());
+        userEntity.setUserEmail(dto.userEmail());
+        userEntity.setUserPassword(bCryptPasswordEncoder.encode(dto.userPassword()));
+        userEntity.setRoles(Set.of(role));
 
         UserEntity result = userRepository.save(userEntity);
 
         return new UserResponseDTO(result);
     }
+
 
     public UserResponseDTO getUserById(UUID userId) {
         Optional<UserEntity> result = userRepository.findById(userId);
@@ -73,4 +97,8 @@ public class UserService {
         userRepository.delete(result.get());
         return true;
     }
+
+    public Optional<UserEntity> getUserByEmail(String userEmail) {return userRepository.findByUserEmail(userEmail);}
+
+    public RoleEntity getRoleByName(String roleName){return roleRepository.findByName(roleName);}
 }

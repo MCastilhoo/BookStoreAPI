@@ -1,5 +1,7 @@
 package com.br.BookStoreAPI.models.DTOs.userDTOs;
+import java.util.Set;
 
+import com.br.BookStoreAPI.models.entities.RoleEntity;
 import jakarta.validation.constraints.NotBlank;
 
 public record UserRequestDTO (
@@ -9,5 +11,7 @@ public record UserRequestDTO (
 
         @NotBlank String userEmail,
 
-        @NotBlank String userPassword
+        String userPassword,
+
+         Set<RoleEntity> userRoles
 ){}

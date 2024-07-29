@@ -1,4 +1,4 @@
-package com.br.BookStoreAPI.controller;
+package com.br.BookStoreAPI.controllers;
 
 
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookDetailsResponseDTO;
