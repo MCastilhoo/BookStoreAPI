@@ -38,7 +38,7 @@ public class UserService {
     }
 
     public UserResponseDTO create(UserRequestDTO dto) {
-        var role = roleRepository.findByName(RoleEntity.RoleType.EMPLOYEE.name());
+        var role = roleRepository.findByRole(RoleEntity.RoleType.EMPLOYEE.name());
 
         var userFromDb = userRepository.findByUserEmail(dto.userEmail());
 
@@ -100,5 +100,5 @@ public class UserService {
 
     public Optional<UserEntity> getUserByEmail(String userEmail) {return userRepository.findByUserEmail(userEmail);}
 
-    public RoleEntity getRoleByName(String roleName){return roleRepository.findByName(roleName);}
+    public RoleEntity getRoleByName(String roleName){return roleRepository.findByRole(roleName);}
 }
