@@ -6,8 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-
 @Repository
-public interface RoleRepository extends JpaRepository<RoleEntity, UUID> {
-    RoleEntity findByRole(String roleName);
+public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+    RoleEntity findByRole(RoleEntity.RoleType role);
+
+    default RoleEntity findByRoleName(String roleName) {
+        return findByRole(RoleEntity.RoleType.valueOf(roleName.toUpperCase()));
+    }
 }

@@ -13,9 +13,8 @@ import java.util.UUID;
 @Setter
 public class RoleEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ROLE_ID")
-    private UUID roleId;
+    private Long roleId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")

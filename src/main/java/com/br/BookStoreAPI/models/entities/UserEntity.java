@@ -1,12 +1,13 @@
 package com.br.BookStoreAPI.models.entities;
 
+import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -15,9 +16,9 @@ import java.util.UUID;
 @Table(name = "USERS")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
-    private UUID userdId;
+    private Long userdId;
 
     @NotBlank
     @Column(name = "USER_FIRST_NAME")
@@ -71,5 +72,10 @@ public class UserEntity {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder) {
+        passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);
+        return passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);
     }
 }

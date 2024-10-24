@@ -38,7 +38,7 @@ public class UserService {
     }
 
     public UserResponseDTO create(UserRequestDTO dto) {
-        var role = roleRepository.findByRole(RoleEntity.RoleType.EMPLOYEE.name());
+        var role = roleRepository.findByRoleName(RoleEntity.RoleType.EMPLOYEE.name());
 
         var userFromDb = userRepository.findByUserEmail(dto.userEmail());
 
@@ -59,7 +59,7 @@ public class UserService {
     }
 
 
-    public UserResponseDTO getUserById(UUID userId) {
+    public UserResponseDTO getUserById(Long userId) {
         Optional<UserEntity> result = userRepository.findById(userId);
         if(result.isEmpty()) return null;
         return new UserResponseDTO(result.get());
@@ -76,7 +76,7 @@ public class UserService {
         return results;
     }
 
-    public UserResponseDTO update( UserRequestDTO userRequestDTO, UUID userId) {
+    public UserResponseDTO update( UserRequestDTO userRequestDTO, Long userId) {
         Optional<UserEntity> result = userRepository.findById(userId);
 
         if(result.isEmpty()) return null;
@@ -91,7 +91,7 @@ public class UserService {
         return new UserResponseDTO(userEntity);
     }
 
-    public boolean delete(UUID userId) {
+    public boolean delete(Long userId) {
         Optional<UserEntity> result = userRepository.findById(userId);
         if(result.isEmpty()) return false;
         userRepository.delete(result.get());
@@ -100,5 +100,5 @@ public class UserService {
 
     public Optional<UserEntity> getUserByEmail(String userEmail) {return userRepository.findByUserEmail(userEmail);}
 
-    public RoleEntity getRoleByName(String roleName){return roleRepository.findByRole(roleName);}
+    public RoleEntity getRoleByName(String roleName){return roleRepository.findByRoleName(roleName);}
 }

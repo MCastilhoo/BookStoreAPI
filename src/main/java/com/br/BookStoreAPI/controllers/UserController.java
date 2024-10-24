@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO>get(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<UserResponseDTO>get(@PathVariable(value = "id") Long id) {
         UserResponseDTO result = userService.getUserById(id);
 
         if(result == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -43,12 +43,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserRequestDTO dto) {
+    public ResponseEntity<UserResponseDTO> update(@PathVariable(value = "id") Long id, @RequestBody @Valid UserRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserEntity> delete(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<UserEntity> delete(@PathVariable(value = "id") Long id) {
         if(userService.delete(id)){
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } else {
