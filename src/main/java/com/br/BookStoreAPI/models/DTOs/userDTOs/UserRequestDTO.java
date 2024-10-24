@@ -11,7 +11,7 @@ public record UserRequestDTO (
 
         @NotBlank String userEmail,
 
-        String userPassword,
+        @NotBlank String userPassword,
 
-         Set<RoleEntity> userRoles
+        @NotBlank Set<RoleEntity> userRoles
 ){}

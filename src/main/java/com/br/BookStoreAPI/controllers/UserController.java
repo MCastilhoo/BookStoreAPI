@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/rest/api/users")
+@RequestMapping("/api/users")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping()
+    @PostMapping("/register")
     public ResponseEntity<UserResponseDTO>create(@RequestBody UserRequestDTO dto)  {
         UserResponseDTO responseDTO = userService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
