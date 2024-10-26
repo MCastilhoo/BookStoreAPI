@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,6 +31,8 @@ import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
+
 public class SecurityConfig {
     @Value("${jwt.public}")
     private String publicKey;
@@ -80,6 +83,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/authenticate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
@@ -91,6 +95,8 @@ public class SecurityConfig {
     JwtDecoder jwtDecoder() throws Exception {
         return NimbusJwtDecoder.withPublicKey(rsaPublicKey()).build();
     }
+
+
 
     @Bean
     JwtEncoder jwtEncoder() throws Exception {

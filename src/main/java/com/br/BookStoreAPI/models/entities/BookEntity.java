@@ -34,10 +34,6 @@ public class BookEntity {
     @Column(name = "PRICE")
     private float price;
 
-    @NotNull
-    @Column(name = "QUANTITY")
-    private int quantity;
-
 
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;

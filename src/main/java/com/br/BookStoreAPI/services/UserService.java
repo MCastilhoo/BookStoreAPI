@@ -36,7 +36,7 @@ public class UserService {
     }
 
     public UserResponseDTO create(UserRequestDTO dto) {
-        var role = roleRepository.findByRoleName(RoleEntity.RoleType.EMPLOYEE.name());
+        var role = roleRepository.findByRoleName(RoleEntity.RoleType.USER.name());
 
         var userFromDb = userRepository.findByUserEmail(dto.userEmail());
 

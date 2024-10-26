@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,18 +16,16 @@ public class SaleHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "SALE_ID")
-    private UUID saleId;
+    private Long saleId;
 
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
+    private UserEntity user;
 
-    @Column(name = "UNIT_QUANTITY")
-    private int unitQuantity;
+    @OneToMany(mappedBy = "saleHistory", cascade = CascadeType.ALL)
+    private List<SaleItemEntity> saleItems;
 
-    @Column(name = "UNIT_PRICE")
-    private double unitPrice;
+    @Column(name = "TOTAL_PRICE")
+    private double totalPrice;
 
-    @Column(name = "SOLD_AMOUNT")
-    private Float soldAmount;
-
-    @Column(name = "AMOUNT")
-    private Float amount;
 }

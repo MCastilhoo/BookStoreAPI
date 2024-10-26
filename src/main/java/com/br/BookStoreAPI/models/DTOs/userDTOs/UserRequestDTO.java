@@ -13,5 +13,5 @@ public record UserRequestDTO (
 
         @NotBlank String userPassword,
 
-        @NotBlank Set<RoleEntity> userRoles
+        @NotBlank Set<Long> roleIds
 ){}

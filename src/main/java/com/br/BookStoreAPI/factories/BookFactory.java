@@ -11,7 +11,6 @@ public class BookFactory {
                 bookEntity.getPageNumbers(),
                 bookEntity.getAuthor(),
                 bookEntity.getPrice(),
-                bookEntity.getQuantity(),
                 bookEntity.getCreationDate(),
                 bookEntity.getModificationDate()
         );

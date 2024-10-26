@@ -11,7 +11,6 @@ public record BookDetailsResponseDTO(
         int pageNumbers,
         String author,
         float price,
-        int quantity,
         LocalDateTime creationDate,
         LocalDateTime modificationDate
 

@@ -18,7 +18,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
-    private Long userdId;
+    private Long userId;
 
     @NotBlank
     @Column(name = "USER_FIRST_NAME")
@@ -50,7 +50,6 @@ public class UserEntity {
     @Column(name = "MODIFICATION_DATE")
     private LocalDateTime modificationDate;
 
-
     @PrePersist
     protected void onCreate() {
         creationDate = LocalDateTime.now();
@@ -61,21 +60,13 @@ public class UserEntity {
         modificationDate = LocalDateTime.now();
     }
 
-    public boolean getRoleByName(String roleName) {
-        try {
-            for (RoleEntity role : roles) {
-                if (role.getRole() == RoleEntity.RoleType.valueOf(roleName)) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean getRoleByName(String roleName) {
+//        return roles.stream()
+//                .anyMatch(role -> role.getRole().name().equals(roleName));
+//    }
 
+    // Método para validar o login de um usuário com base na senha
     public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder) {
-        passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);
         return passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);
     }
 }

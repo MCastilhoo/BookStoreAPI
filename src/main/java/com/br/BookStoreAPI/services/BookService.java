@@ -60,7 +60,6 @@ public class BookService {
         result.get().setPageNumbers(bookRequestDTO.pageNumbers());
         result.get().setAuthor(bookRequestDTO.author());
         result.get().setPrice(bookRequestDTO.price());
-        result.get().setQuantity(bookRequestDTO.quantity());
 
         BookEntity saved = bookRepository.save(result.get());
 
@@ -73,14 +72,14 @@ public class BookService {
         bookRepository.delete(result.get());
         return true;
     }
-
-    public boolean checkBookAvaliable(UUID id, Integer requestedQuantity) {
-        Optional<BookEntity> result = bookRepository.findById(id);
-        if (result.isPresent()) {
-            BookEntity book = result.get();
-            return book.getQuantity() >= requestedQuantity;
-        } else {
-            return false;
-        }
-    }
+//
+////    public boolean checkBookAvaliable(UUID id, Integer requestedQuantity) {
+////        Optional<BookEntity> result = bookRepository.findById(id);
+////        if (result.isPresent()) {
+////            BookEntity book = result.get();
+////            return book.getQuantity() >= requestedQuantity;
+////        } else {
+////            return false;
+////        }
+//    }
 }
