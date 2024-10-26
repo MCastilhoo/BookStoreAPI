@@ -44,7 +44,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        UserEntity userEntity = new UserEntity();
+        UserEntity userEntity = new UserEntity(userId);
         userEntity.setUserFirstName(dto.userFirstName());
         userEntity.setUserLastName(dto.userLastName());
         userEntity.setUserEmail(dto.userEmail());

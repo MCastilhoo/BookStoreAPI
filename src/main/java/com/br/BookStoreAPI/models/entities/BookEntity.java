@@ -1,11 +1,13 @@
 package com.br.BookStoreAPI.models.entities;
 
-import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class BookEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "BOOK_ID")
-    private UUID bookId;
+    private Long bookId;
 
     @NotBlank
     @Column(name = "TITLE")
