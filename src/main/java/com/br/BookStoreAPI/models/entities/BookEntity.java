@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "BOOKS")
 public class BookEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BOOK_ID")
     private Long bookId;
 

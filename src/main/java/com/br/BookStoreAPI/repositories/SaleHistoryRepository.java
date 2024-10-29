@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SaleHistoryRepository extends JpaRepository<SaleHistoryEntity, Long> {
-    List<SaleHistoryEntity> findByUserId(Long userId);
+    List<SaleHistoryEntity> findByUser_UserId(Long userId);
 }

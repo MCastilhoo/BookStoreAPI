@@ -29,7 +29,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookResponseDTO> getById(@PathVariable UUID id) {
+    public ResponseEntity<BookResponseDTO> getById(@PathVariable Long id) {
         BookResponseDTO responseDTO = bookService.getBookById(id);
         if(responseDTO == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
@@ -41,12 +41,12 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookResponseDTO> update(@PathVariable(value = "id") UUID id, @RequestBody @Valid BookRequestDTO dto) {
+    public ResponseEntity<BookResponseDTO> update(@PathVariable(value = "id") Long id, @RequestBody @Valid BookRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK).body(bookService.update(dto, id));
     }
 
     @DeleteMapping
-    public ResponseEntity<BookResponseDTO> delete(@PathVariable (value = "id") UUID id) {
+    public ResponseEntity<BookResponseDTO> delete(@PathVariable (value = "id") Long id) {
         if(bookService.delete(id)){
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } else {

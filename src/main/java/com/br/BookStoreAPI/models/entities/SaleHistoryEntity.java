@@ -14,7 +14,7 @@ import java.util.List;
 public class SaleHistoryEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SALE_ID")
     private Long saleId;
 

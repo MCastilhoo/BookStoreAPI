@@ -36,6 +36,10 @@ public class UserEntity {
     @Column(name = "USER_PASSWORD")
     private String userPassword;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ROLE_ID")
+    private RoleEntity role;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "USER_ROLES",
@@ -65,7 +69,6 @@ public class UserEntity {
 //                .anyMatch(role -> role.getRole().name().equals(roleName));
 //    }
 
-    // Método para validar o login de um usuário com base na senha
     public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);
     }

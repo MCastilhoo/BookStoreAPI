@@ -43,7 +43,7 @@ public class AdminUserConfig implements CommandLineRunner {
                     System.out.println("Admin já existe");
                 },
                 () ->{
-                    var user = new UserEntity(userId);
+                    var user = new UserEntity();
                     user.setUserEmail("admin@admin.com");
                     user.setUserPassword(passwordEncoder.encode("admin"));
                     user.setRoles(Set.of(roleAdmin));

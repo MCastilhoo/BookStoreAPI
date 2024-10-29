@@ -37,7 +37,7 @@ public class BookService {
         return new BookResponseDTO(result);
     }
 
-    public BookResponseDTO getBookById(UUID id) {
+    public BookResponseDTO getBookById(Long id) {
         Optional<BookEntity> result = bookRepository.findById(id);
         if (result.isEmpty()) return null;
         return new BookResponseDTO(result.get());
@@ -53,7 +53,7 @@ public class BookService {
         return results;
     }
 
-    public BookResponseDTO update(BookRequestDTO bookRequestDTO, UUID bookId) {
+    public BookResponseDTO update(BookRequestDTO bookRequestDTO, Long bookId) {
         Optional<BookEntity> result = bookRepository.findById(bookId);
         if (result.isEmpty()) return null;
         result.get().setTitle(bookRequestDTO.title());
@@ -66,7 +66,7 @@ public class BookService {
         return new BookResponseDTO(saved);
     }
 
-    public boolean delete(UUID bookId) {
+    public boolean delete(Long bookId) {
         Optional<BookEntity> result = bookRepository.findById(bookId);
         if (result.isEmpty()) return false;
         bookRepository.delete(result.get());

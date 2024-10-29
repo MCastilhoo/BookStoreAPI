@@ -1,6 +1,8 @@
 package com.br.BookStoreAPI.controllers;
 
 
+import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
+import com.br.BookStoreAPI.models.DTOs.errorsDTOs.ErrorResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
@@ -14,9 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,11 +27,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO>create(@RequestBody UserRequestDTO dto)  {
-        UserResponseDTO responseDTO = userService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    public ResponseEntity<Object> create(@RequestBody UserRequestDTO dto) {
+        try {
+            UserResponseDTO responseDTO = userService.create(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseDTO(e.getMessage()));
+        }
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO>get(@PathVariable(value = "id") Long id) {
         UserResponseDTO result = userService.getUserById(id);
