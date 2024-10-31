@@ -1,8 +1,8 @@
 package com.br.BookStoreAPI.services;
 
 import com.br.BookStoreAPI.models.entities.BookEntity;
-import com.br.BookStoreAPI.models.entities.SaleHistoryEntity;
-import com.br.BookStoreAPI.models.entities.SaleItemEntity;
+import com.br.BookStoreAPI.models.entities.HistorySaleEntity;
+import com.br.BookStoreAPI.models.entities.DetailsSaleEntity;
 import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.BookRepository;
 import com.br.BookStoreAPI.repositories.SaleHistoryRepository;
@@ -26,13 +26,13 @@ class SaleHistoryService {
 
 
     @Transactional
-    public SaleHistoryEntity createSale(Long userId, List<SaleItemEntity> saleItems) {
+    public HistorySaleEntity createSale(Long userId, List<DetailsSaleEntity> saleItems) {
         UserEntity user = userRepository.findById(userId).get();
-        SaleHistoryEntity saleHistory = new SaleHistoryEntity();
+        HistorySaleEntity saleHistory = new HistorySaleEntity();
         saleHistory.setUser(user);
 
         double totalSalePrice = 0;
-        for(SaleItemEntity saleItem : saleItems) {
+        for(DetailsSaleEntity saleItem : saleItems) {
             BookEntity book = bookRepository.findById(saleItem.getBook().getBookId())
                     .orElseThrow(() -> new RuntimeException("Book not found"));
             saleItem.setUnitPrice(book.getPrice());

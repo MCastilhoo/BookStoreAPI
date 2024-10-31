@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "SALE_ITEM")
-public class SaleItemEntity {
+public class DetailsSaleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ITEM_ID")
-    private Long itemId;
+    private Long saleHistoryId;
 
     @ManyToOne
     @JoinColumn(name = "SALE_ID")
-    private SaleHistoryEntity saleHistory;
+    private HistorySaleEntity saleHistory;
 
     @ManyToOne
     @JoinColumn(name = "BOOK_ID")

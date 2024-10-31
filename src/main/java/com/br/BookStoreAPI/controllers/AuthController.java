@@ -34,14 +34,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDTO(e.getMessage()));
         }
     }
-
-    @GetMapping("/authenticate")
-    public ResponseEntity<String> authenticate(@RequestHeader("Authorization") String token) {
-        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
-        if (authService.validateToken(jwtToken)) {
-            return ResponseEntity.ok("Token is valid! You can access other endpoints.");
-        } else {
-            return ResponseEntity.status(401).body("Invalid token.");
-        }
-    }
 }
