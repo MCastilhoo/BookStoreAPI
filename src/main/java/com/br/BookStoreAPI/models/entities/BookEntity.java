@@ -32,9 +32,17 @@ public class BookEntity {
     @Column(name = "AUTHOR")
     private String author;
 
+    @NotBlank
+    @Column(name = "CATEGORY")
+    private String category;
+
+    @NotBlank
+    @Column(name = "QUANTITY")
+    private Integer quantity;
+
     @NotNull
     @Column(name = "PRICE")
-    private float price;
+    private Float price;
 
 
     @Column(name = "CREATION_DATE")

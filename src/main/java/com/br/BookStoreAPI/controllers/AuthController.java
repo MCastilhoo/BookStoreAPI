@@ -1,5 +1,6 @@
 package com.br.BookStoreAPI.controllers;
 
+import com.br.BookStoreAPI.models.DTOs.errorsDTOs.ErrorResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginResponseDTO;
 import com.br.BookStoreAPI.services.AuthService;
@@ -7,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,9 +26,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        LoginResponseDTO reponse = authService.login(loginRequestDTO);
-        return ResponseEntity.ok(reponse);
+    public ResponseEntity<Object> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        try {
+            LoginResponseDTO reponse = authService.login(loginRequestDTO);
+            return ResponseEntity.ok(reponse);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDTO(e.getMessage()));
+        }
     }
 
     @GetMapping("/authenticate")

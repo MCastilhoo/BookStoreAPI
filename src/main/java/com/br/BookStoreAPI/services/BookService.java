@@ -30,6 +30,12 @@ public class BookService {
     }
 
     public BookResponseDTO create(BookRequestDTO bookRequestDTO) {
+        if (bookRequestDTO.price() == null || bookRequestDTO.price() <= 0){
+            throw new IllegalArgumentException("O livro não pode ser cadastrado sem preço ou com preço negativo");
+        }
+        if (bookRequestDTO.quantity() == null || bookRequestDTO.quantity() <= 0){
+            throw new IllegalArgumentException("O livro não pode ser cadastrado sem nenhuma quantidade no estoque");
+        }
         BookEntity book = new BookEntity();
         BeanUtils.copyProperties(bookRequestDTO, book);
         BookEntity result = bookRepository.save(book);

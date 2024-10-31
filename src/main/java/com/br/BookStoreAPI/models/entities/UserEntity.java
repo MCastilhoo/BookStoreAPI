@@ -40,14 +40,6 @@ public class UserEntity {
     @JoinColumn(name = "ROLE_ID")
     private RoleEntity role;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "USER_ROLES",
-            joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
-    )
-    private Set<RoleEntity> roles;
-
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
 
@@ -57,17 +49,13 @@ public class UserEntity {
     @PrePersist
     protected void onCreate() {
         creationDate = LocalDateTime.now();
+        modificationDate = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
         modificationDate = LocalDateTime.now();
     }
-
-//    public boolean getRoleByName(String roleName) {
-//        return roles.stream()
-//                .anyMatch(role -> role.getRole().name().equals(roleName));
-//    }
 
     public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);

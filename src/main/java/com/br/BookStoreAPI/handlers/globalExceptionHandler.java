@@ -10,7 +10,6 @@ public class globalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        System.out.println("Handling UserAlreadyExistsException: " + ex.getMessage());
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 }

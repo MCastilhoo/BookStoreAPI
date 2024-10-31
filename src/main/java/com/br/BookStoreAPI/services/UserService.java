@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,14 +46,9 @@ public class UserService {
 
     public UserResponseDTO create(UserRequestDTO dto) {
         var role = roleRepository.findByRoleName(RoleEntity.RoleType.USER.name());
-        if (role == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found");
-        }
-
-        // Verifica se o usuário já existe pelo email
         var userFromDb = userRepository.findByUserEmail(dto.userEmail());
         if (userFromDb.isPresent()) {
-            throw new UserAlreadyExistsException("Email already in use: " + dto.userEmail());
+            throw new UserAlreadyExistsException("User's email " + dto.userEmail() + " is already in use. " );
         }
 
         UserEntity userEntity = new UserEntity();
@@ -59,7 +56,7 @@ public class UserService {
         userEntity.setUserLastName(dto.userLastName());
         userEntity.setUserEmail(dto.userEmail());
         userEntity.setUserPassword(bCryptPasswordEncoder.encode(dto.userPassword()));
-        userEntity.setRoles(Set.of(role));
+        userEntity.setRole(role);
 
         UserEntity result = userRepository.save(userEntity);
 
@@ -74,8 +71,12 @@ public class UserService {
     }
 
     public List<UserDetailsResponseDTO> getAll(Pageable pageable) {
+        UserEntity currentUser = getCurrentUser();
+        var adminRole = roleRepository.findByRoleName(RoleEntity.RoleType.ADMIN.name());
+        if(!adminRole.equals(currentUser.getRole())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
+        }
         Page<UserEntity> users = userRepository.findAll(pageable);
-
         List<UserDetailsResponseDTO> results = users
                 .stream()
                 .map(UserFactory::CreateDetails)
@@ -111,5 +112,15 @@ public class UserService {
 
     public RoleEntity getRoleByName(String roleName) {
         return roleRepository.findByRoleName(roleName);
+    }
+
+    private UserEntity getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+        String curentUserEmail = auth.getName();
+        return userRepository.findByUserEmail(curentUserEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

@@ -4,6 +4,7 @@ package com.br.BookStoreAPI.controllers;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookResponseDTO;
+import com.br.BookStoreAPI.models.DTOs.errorsDTOs.ErrorResponseDTO;
 import com.br.BookStoreAPI.services.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,13 @@ public class BookController {
     private BookService bookService;
 
     @PostMapping()
-    public ResponseEntity<BookResponseDTO> create(@RequestBody @Valid BookRequestDTO dto) {
-        BookResponseDTO bookResponseDTO = bookService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookResponseDTO);
+    public ResponseEntity<Object> create(@RequestBody @Valid BookRequestDTO dto) {
+        try {
+            BookResponseDTO bookResponseDTO = bookService.create(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(bookResponseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e. getMessage()));
+        }
     }
 
     @GetMapping("/{id}")

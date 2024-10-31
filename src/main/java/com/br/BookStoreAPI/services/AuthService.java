@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,18 +31,20 @@ public class AuthService {
     public LoginResponseDTO login(LoginRequestDTO loginDTO){
         var user = userRepository.findByUserEmail(loginDTO.userEmail());
         if (user.isEmpty() || !user.get().isLoginCorrect(loginDTO, passwordEncoder)) {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new BadCredentialsException("Invalid user email or password");
         }
         var now = Instant.now();
         var expiresIn = 300L;
-        var scope = user.get().getRoles()
+        var role = user.get().getRole();
+        var scope = List.of(role.getRole())
                 .stream()
-                .map(RoleEntity::getRole)
                 .collect(Collectors.toList());
+
         var claims = JwtClaimsSet.builder()
                 .issuer("teste")
                 .subject(user.get().getUserEmail().toString())
                 .expiresAt(now.plusSeconds(expiresIn))
+                .claim("authorization", scope)
                 .issuedAt(now)
                 .build();
 

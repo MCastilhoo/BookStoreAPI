@@ -44,7 +44,6 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<List<UserDetailsResponseDTO>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAll(pageable));
     }
