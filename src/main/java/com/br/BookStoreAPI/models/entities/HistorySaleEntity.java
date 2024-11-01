@@ -30,5 +30,5 @@ public class HistorySaleEntity {
     private double totalPrice;
 
     @Column(name = "SELL_DATE")
-    LocalDateTime sellDate;
+    private LocalDateTime sellDate;
 }

@@ -1,8 +1,8 @@
 package com.br.BookStoreAPI.services;
 
 
-import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
 import com.br.BookStoreAPI.factories.UserFactory;
+import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
@@ -22,7 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +34,10 @@ public class UserService {
     private RoleRepository roleRepository;
 
     private final PasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    EmailService emailService;
+
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
@@ -59,7 +62,7 @@ public class UserService {
         userEntity.setRole(role);
 
         UserEntity result = userRepository.save(userEntity);
-
+        emailService.sendEmail(dto.userEmail(), "Código de confirmação do novo usuário", "Código de confirmação: ");
         return new UserResponseDTO(result);
     }
 

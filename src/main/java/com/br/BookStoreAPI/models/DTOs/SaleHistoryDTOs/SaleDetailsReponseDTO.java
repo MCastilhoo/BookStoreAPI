@@ -1,4 +1,4 @@
-package com.br.BookStoreAPI.models.DTOs.Sale;
+package com.br.BookStoreAPI.models.DTOs.SaleHistoryDTOs;
 
 import com.br.BookStoreAPI.models.entities.UserEntity;
 

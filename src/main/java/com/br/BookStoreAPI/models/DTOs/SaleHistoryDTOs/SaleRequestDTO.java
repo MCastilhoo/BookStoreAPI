@@ -1,4 +1,4 @@
-package com.br.BookStoreAPI.models.DTOs.Sale;
+package com.br.BookStoreAPI.models.DTOs.SaleHistoryDTOs;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

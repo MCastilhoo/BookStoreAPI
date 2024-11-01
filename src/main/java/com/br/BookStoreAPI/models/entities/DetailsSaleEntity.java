@@ -7,29 +7,27 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "SALE_ITEM")
+@Table(name = "DETAILS_SALE")
 public class DetailsSaleEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ITEM_ID")
-    private Long saleHistoryId;
+    @Column(name = "DETAIL_ID")
+    private Long detailId;
 
     @ManyToOne
     @JoinColumn(name = "SALE_ID")
     private HistorySaleEntity saleHistory;
 
-    @ManyToOne
-    @JoinColumn(name = "BOOK_ID")
-    private BookEntity book;
+    @Column(name = "BOOK_ID")
+    private String bookId;
 
-    @Column(name = "UNI_PRICE")
-    private double unitPrice;
+    @Column(name = "QUANTITY")
+    private int quantity;
 
-    @Column(name = "BOOK_QUANTITY")
-    private Integer quantity;
+    @Column(name = "PRICE_PER_BOOK")
+    private double pricePerBook;
 
-    @Column(name = "TOTAL_PRICE")
-    private double totalPrice;
-
-
+    @Column(name = "TOTAL_BOOK_PRICE")
+    private double totalBookPrice;
 }
