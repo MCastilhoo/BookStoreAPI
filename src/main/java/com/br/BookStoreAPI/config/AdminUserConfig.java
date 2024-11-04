@@ -5,6 +5,7 @@ import com.br.BookStoreAPI.models.entities.RoleEntity;
 import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.RoleRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
+import com.br.BookStoreAPI.utils.enums.RoleType;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +30,13 @@ public class AdminUserConfig implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        for (RoleEntity.RoleType value : RoleEntity.RoleType.values()) {
+        for (RoleType value : RoleType.values()) {
             RoleEntity role = new RoleEntity();
             role.setRole(value);
             role.setRoleId(value.getRoleId());
             roleRepository.save(role);
         }
-        var roleAdmin = roleRepository.findByRoleName(RoleEntity.RoleType.ADMIN.name());
+        var roleAdmin = roleRepository.findByRoleName(RoleType.ADMIN.name());
         var userAdmin = userRepository.findByUserEmail("admin@admin.com");
 
         userAdmin.ifPresentOrElse(

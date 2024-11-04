@@ -1,5 +1,6 @@
 package com.br.BookStoreAPI.models.entities;
 
+import com.br.BookStoreAPI.utils.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,18 +18,5 @@ public class RoleEntity {
     @Column(name = "ROLE", nullable = false)
     private RoleType role;
 
-    public enum RoleType {
-        ADMIN(1L),
-        USER(2L);
 
-        private final long roleId;
-
-        RoleType(long roleId) {
-            this.roleId = roleId;
-        }
-
-        public long getRoleId() {
-            return roleId;
-        }
-    }
 }

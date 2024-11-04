@@ -1,15 +1,19 @@
 package com.br.BookStoreAPI.services;
 
-
 import com.br.BookStoreAPI.factories.UserFactory;
 import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
+import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
 import com.br.BookStoreAPI.models.entities.RoleEntity;
 import com.br.BookStoreAPI.models.entities.UserEntity;
+import com.br.BookStoreAPI.models.entities.UserVerifierEntity;
 import com.br.BookStoreAPI.repositories.RoleRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
+import com.br.BookStoreAPI.repositories.UserVerifyRepository;
+import com.br.BookStoreAPI.utils.enums.RoleType;
+import com.br.BookStoreAPI.utils.enums.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,8 +42,9 @@ public class UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    EmailService emailService;
-
+    private EmailService emailService;
+    @Autowired
+    private UserVerifyRepository userVerifyRepository;
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
@@ -45,13 +52,11 @@ public class UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-
-
     public UserResponseDTO create(UserRequestDTO dto) {
-        var role = roleRepository.findByRoleName(RoleEntity.RoleType.USER.name());
+        var role = roleRepository.findByRoleName(RoleType.USER.name());
         var userFromDb = userRepository.findByUserEmail(dto.userEmail());
         if (userFromDb.isPresent()) {
-            throw new UserAlreadyExistsException("User's email " + dto.userEmail() + " is already in use. " );
+            throw new UserAlreadyExistsException("User's email " + dto.userEmail() + " is already in use.");
         }
 
         UserEntity userEntity = new UserEntity();
@@ -60,12 +65,19 @@ public class UserService {
         userEntity.setUserEmail(dto.userEmail());
         userEntity.setUserPassword(bCryptPasswordEncoder.encode(dto.userPassword()));
         userEntity.setRole(role);
-
+        userEntity.setUserStatus(UserStatus.PENDING);
         UserEntity result = userRepository.save(userEntity);
-        emailService.sendEmail(dto.userEmail(), "Código de confirmação do novo usuário", "Código de confirmação: ");
+
+        UserVerifierEntity verifier = new UserVerifierEntity();
+        verifier.setUser(result);
+        verifier.setUuid(UUID.randomUUID());
+        verifier.setExpriation(Instant.now().plusSeconds(3600));
+        userVerifyRepository.save(verifier);
+        emailService.sendEmail(dto.userEmail(),
+                "Código de confirmação:",
+                "Seu código é: "+ verifier.getUuid());
         return new UserResponseDTO(result);
     }
-
 
     public UserResponseDTO getUserById(Long userId) {
         UserEntity result = userRepository.findById(userId)
@@ -75,17 +87,15 @@ public class UserService {
 
     public List<UserDetailsResponseDTO> getAll(Pageable pageable) {
         UserEntity currentUser = getCurrentUser();
-        var adminRole = roleRepository.findByRoleName(RoleEntity.RoleType.ADMIN.name());
-        if(!adminRole.equals(currentUser.getRole())) {
+        var adminRole = roleRepository.findByRoleName(RoleType.ADMIN.name());
+        if (!adminRole.equals(currentUser.getRole())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
         }
         Page<UserEntity> users = userRepository.findAll(pageable);
-        List<UserDetailsResponseDTO> results = users
+        return users
                 .stream()
                 .map(UserFactory::CreateDetails)
                 .collect(Collectors.toList());
-
-        return results;
     }
 
     public UserResponseDTO update(UserRequestDTO userRequestDTO, Long userId) {
@@ -98,7 +108,6 @@ public class UserService {
         userEntity.setUserPassword(bCryptPasswordEncoder.encode(userRequestDTO.userPassword()));
 
         UserEntity updatedUser = userRepository.save(userEntity);
-
         return new UserResponseDTO(updatedUser);
     }
 
@@ -109,21 +118,50 @@ public class UserService {
         return true;
     }
 
-    public Optional<UserEntity> getUserByEmail(String userEmail) {
-        return userRepository.findByUserEmail(userEmail);
-    }
-
-    public RoleEntity getRoleByName(String roleName) {
-        return roleRepository.findByRoleName(roleName);
-    }
+//    public Optional<UserEntity> getUserByEmail(String userEmail) {
+//        return userRepository.findByUserEmail(userEmail);
+//    }
+//
+//    public RoleEntity getRoleByName(String roleName) {
+//        return roleRepository.findByRoleName(roleName);
+//    }
 
     private UserEntity getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             throw new RuntimeException("User not authenticated");
         }
-        String curentUserEmail = auth.getName();
-        return userRepository.findByUserEmail(curentUserEmail)
+        String currentUserEmail = auth.getName();
+        return userRepository.findByUserEmail(currentUserEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+
+    public String verify(String uuid) {
+        // Corrigido para usar findByUuid
+        Optional<UserVerifierEntity> optionalUserVerification = userVerifyRepository.findByUuid(UUID.fromString(String.valueOf(UUID.fromString(uuid))));
+
+        // Verifica se o usuário de verificação está presente
+        if (optionalUserVerification.isPresent()) {
+            UserVerifierEntity userVerification = optionalUserVerification.get();
+
+            // Corrigido o nome do método getExpiration()
+            if (userVerification.getExpriation().compareTo(Instant.now()) >= 0) {
+                UserEntity user = userVerification.getUser();
+                user.setUserStatus(UserStatus.ACTIVE);
+                userRepository.save(user);
+                return "Usuário Verificado";
+            } else {
+                userVerifyRepository.delete(userVerification);
+                return "Tempo de verificação expirado";
+            }
+        } else {
+            return "Usuário não verificado";
+        }
+    }
+
+
+//    public boolean isLoginCorrect(UserEntity user, LoginRequestDTO loginRequestDTO) {
+//        return bCryptPasswordEncoder.matches(loginRequestDTO.password(), user.getUserPassword());
+//    }
 }

@@ -1,13 +1,13 @@
 package com.br.BookStoreAPI.models.entities;
 
-import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
-import jakarta.validation.constraints.*;
+import com.br.BookStoreAPI.utils.enums.UserStatus;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -40,6 +40,10 @@ public class UserEntity {
     @JoinColumn(name = "ROLE_ID")
     private RoleEntity role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "USER_STATUS")
+    private UserStatus userStatus;
+
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
 
@@ -57,7 +61,4 @@ public class UserEntity {
         modificationDate = LocalDateTime.now();
     }
 
-    public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(loginRequestDTO.password(), this.userPassword);
-    }
 }

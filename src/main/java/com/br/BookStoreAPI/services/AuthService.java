@@ -2,7 +2,7 @@ package com.br.BookStoreAPI.services;
 
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginResponseDTO;
-import com.br.BookStoreAPI.models.entities.RoleEntity;
+import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,23 +28,25 @@ public class AuthService {
         this.jwtDecoder = jwtDecoder;
     }
 
-    public LoginResponseDTO login(LoginRequestDTO loginDTO){
-        var user = userRepository.findByUserEmail(loginDTO.userEmail());
-        if (user.isEmpty() || !user.get().isLoginCorrect(loginDTO, passwordEncoder)) {
+    public LoginResponseDTO login(LoginRequestDTO loginDTO) {
+        // Busca o usuário pelo e-mail
+        var userOpt = userRepository.findByUserEmail(loginDTO.userEmail());
+
+        // Verifica se o usuário existe e se a senha está correta
+        if (userOpt.isEmpty() || !passwordEncoder.matches(loginDTO.password(), userOpt.get().getUserPassword())) {
             throw new BadCredentialsException("Invalid user email or password");
         }
+
+        UserEntity user = userOpt.get();
         var now = Instant.now();
-        var expiresIn = 300L;
-        var role = user.get().getRole();
-        var scope = List.of(role.getRole())
-                .stream()
-                .collect(Collectors.toList());
+        var expiresIn = 300L; // Expiração do token em segundos
+        var role = user.getRole();
 
         var claims = JwtClaimsSet.builder()
                 .issuer("teste")
-                .subject(user.get().getUserEmail().toString())
+                .subject(user.getUserEmail())
                 .expiresAt(now.plusSeconds(expiresIn))
-                .claim("authorization", scope)
+                .claim("authorization", List.of(role.getRole()))
                 .issuedAt(now)
                 .build();
 
