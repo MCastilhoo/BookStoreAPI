@@ -6,6 +6,7 @@ import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.RoleRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
 import com.br.BookStoreAPI.utils.enums.RoleType;
+import com.br.BookStoreAPI.utils.enums.UserStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,7 @@ public class AdminUserConfig implements CommandLineRunner {
                     user.setUserEmail("admin@admin.com");
                     user.setUserPassword(passwordEncoder.encode("admin"));
                     user.setRole(roleAdmin);;
+                    user.setUserStatus(UserStatus.VERIFIED);
                     userRepository.save(user);
                 }
         );

@@ -14,9 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -41,6 +39,16 @@ public class UserController {
 
         if(result == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/authenticate/{uuid}")
+    public ResponseEntity<Object> authenticate(@PathVariable(value = "uuid") String uuid) {
+        try {
+            userService.verifyUser(uuid);
+            return ResponseEntity.status(HttpStatus.OK).body("Usuário Verificado com sucesso!");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping

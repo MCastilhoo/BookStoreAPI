@@ -4,6 +4,7 @@ import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginResponseDTO;
 import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.UserRepository;
+import com.br.BookStoreAPI.repositories.UserVerifyRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,13 +22,11 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtEncoder jwtEncoder;
     private final PasswordEncoder passwordEncoder;
-    private final JwtDecoder jwtDecoder;
 
-    public AuthService(UserRepository userRepository, JwtEncoder jwtEncoder, PasswordEncoder passwordEncoder, @Qualifier("jwtDecoder") JwtDecoder jwtDecoder) {
+    public AuthService(UserRepository userRepository, JwtEncoder jwtEncoder, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jwtEncoder = jwtEncoder;
         this.passwordEncoder = passwordEncoder;
-        this.jwtDecoder = jwtDecoder;
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginDTO) {
@@ -53,14 +54,5 @@ public class AuthService {
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         return new LoginResponseDTO(jwtValue, expiresIn);
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Jwt jwt = jwtDecoder.decode(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 }

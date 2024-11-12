@@ -2,11 +2,9 @@ package com.br.BookStoreAPI.services;
 
 import com.br.BookStoreAPI.factories.UserFactory;
 import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
-import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
-import com.br.BookStoreAPI.models.entities.RoleEntity;
 import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.models.entities.UserVerifierEntity;
 import com.br.BookStoreAPI.repositories.RoleRepository;
@@ -75,7 +73,7 @@ public class UserService {
         userVerifyRepository.save(verifier);
         emailService.sendEmail(dto.userEmail(),
                 "Código de confirmação:",
-                "Seu código é: "+ verifier.getUuid());
+                "Seu código é: " + verifier.getUuid());
         return new UserResponseDTO(result);
     }
 
@@ -136,32 +134,26 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-
-    public String verify(String uuid) {
-        // Corrigido para usar findByUuid
-        Optional<UserVerifierEntity> optionalUserVerification = userVerifyRepository.findByUuid(UUID.fromString(String.valueOf(UUID.fromString(uuid))));
-
-        // Verifica se o usuário de verificação está presente
-        if (optionalUserVerification.isPresent()) {
-            UserVerifierEntity userVerification = optionalUserVerification.get();
-
-            // Corrigido o nome do método getExpiration()
-            if (userVerification.getExpriation().compareTo(Instant.now()) >= 0) {
-                UserEntity user = userVerification.getUser();
-                user.setUserStatus(UserStatus.ACTIVE);
+    public String verifyUser(String uuid) {
+        UserVerifierEntity userVerifier = userVerifyRepository.findByUuid(UUID.fromString(uuid)).get();
+        if (userVerifier != null) {
+            if (userVerifier.getExpriation().compareTo(Instant.now()) >= 0) {
+                UserEntity user = userVerifier.getUser();
+                user.setUserStatus(UserStatus.VERIFIED);
                 userRepository.save(user);
-                return "Usuário Verificado";
+                return "User verified";
             } else {
-                userVerifyRepository.delete(userVerification);
+                userVerifyRepository.delete(userVerifier);
+                UserEntity user = userVerifier.getUser();
+                user.setUserStatus(UserStatus.UNVERIFIED);
                 return "Tempo de verificação expirado";
             }
-        } else {
-            return "Usuário não verificado";
         }
+        return uuid;
     }
 
-
-//    public boolean isLoginCorrect(UserEntity user, LoginRequestDTO loginRequestDTO) {
-//        return bCryptPasswordEncoder.matches(loginRequestDTO.password(), user.getUserPassword());
-//    }
+    public UserEntity findByEmail(String email) {
+        return userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }

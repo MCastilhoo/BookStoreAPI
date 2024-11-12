@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor
 public enum UserStatus {
-    ACTIVE("A", "Active"),
-    INACTIVE("I", "Inactive"),
+    VERIFIED("V", "Verified"),
+    UNVERIFIED("U", "Unverified"),
     PENDING("P", "Pending");
 
     private final String code;

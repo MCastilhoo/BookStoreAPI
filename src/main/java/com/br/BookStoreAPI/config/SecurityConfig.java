@@ -1,18 +1,17 @@
 package com.br.BookStoreAPI.config;
 
+import com.br.BookStoreAPI.services.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +20,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
@@ -31,13 +31,37 @@ import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
-
 public class SecurityConfig {
+
+    private final ApplicationContext applicationContext;
+
+    public SecurityConfig(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
     @Value("${jwt.public}")
     private String publicKey;
+
     @Value("${jwt.private}")
     private String privateKey;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        VerifiedUserFilter verifiedUserFilter = applicationContext.getBean(VerifiedUserFilter.class);
+
+        http
+                .addFilterBefore(verifiedUserFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/authenticate/{uuid}").permitAll()
+                        .anyRequest().authenticated())
+                .csrf(csrf -> csrf.disable())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
+    }
 
     @Bean
     public RSAPublicKey rsaPublicKey() throws Exception {
@@ -45,17 +69,6 @@ public class SecurityConfig {
                 .replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s+", "");
-
-        if (cleanedKey.startsWith("ssh-rsa")) {
-            String[] parts = cleanedKey.split("\\s+");
-            if (parts.length >= 2) {
-                cleanedKey = parts[1];
-            } else {
-                throw new IllegalArgumentException("Formato de chave ssh-rsa inválido");
-            }
-        }
-
-        System.out.println("Public Key (cleaned): " + cleanedKey); // Para debug
 
         byte[] decoded = Base64.getDecoder().decode(cleanedKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
@@ -70,8 +83,6 @@ public class SecurityConfig {
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s+", "");
 
-        System.out.println("Private Key PEM: " + privateKeyPEM); // Para debug
-
         byte[] encoded = Base64.getMimeDecoder().decode(privateKeyPEM);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -79,33 +90,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-                        .anyRequest().authenticated())
-                .csrf(csrf -> csrf.disable())
-                .oauth2ResourceServer( oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        return http.build();
-    }
-    @Bean
-    JwtDecoder jwtDecoder() throws Exception {
+    public JwtDecoder jwtDecoder() throws Exception {
         return NimbusJwtDecoder.withPublicKey(rsaPublicKey()).build();
     }
 
-
-
     @Bean
-    JwtEncoder jwtEncoder() throws Exception {
+    public JwtEncoder jwtEncoder() throws Exception {
         RSAKey key = new RSAKey.Builder(rsaPublicKey()).privateKey(rsaPrivateKey()).build();
         ImmutableJWKSet keys = new ImmutableJWKSet<>(new JWKSet(key));
         return new NimbusJwtEncoder(keys);
     }
 
     @Bean
-    PasswordEncoder encoder() {
+    public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 }

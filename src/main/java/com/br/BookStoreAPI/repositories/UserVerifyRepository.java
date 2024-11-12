@@ -12,3 +12,7 @@ public interface UserVerifyRepository extends JpaRepository <UserVerifierEntity,
     ;
 
 }
+
+
+
+
