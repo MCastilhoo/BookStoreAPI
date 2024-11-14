@@ -76,14 +76,5 @@ public class BookService {
         bookRepository.delete(result.get());
         return true;
     }
-//
-////    public boolean checkBookAvaliable(UUID id, Integer requestedQuantity) {
-////        Optional<BookEntity> result = bookRepository.findById(id);
-////        if (result.isPresent()) {
-////            BookEntity book = result.get();
-////            return book.getQuantity() >= requestedQuantity;
-////        } else {
-////            return false;
-////        }
-//    }
+
 }

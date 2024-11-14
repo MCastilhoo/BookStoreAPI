@@ -1,6 +1,5 @@
 package com.br.BookStoreAPI.config;
 
-import com.br.BookStoreAPI.services.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
