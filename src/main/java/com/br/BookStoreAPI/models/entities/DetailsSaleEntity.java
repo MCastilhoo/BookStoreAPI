@@ -17,7 +17,7 @@ public class DetailsSaleEntity {
 
     @ManyToOne
     @JoinColumn(name = "SALE_ID")
-    private HistorySaleEntity saleHistory;
+    private SaleEntity saleHistory;
 
     @Column(name = "BOOK_ID")
     private String bookId;
