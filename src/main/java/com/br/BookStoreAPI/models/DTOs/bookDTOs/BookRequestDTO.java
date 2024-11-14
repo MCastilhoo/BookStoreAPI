@@ -11,6 +11,8 @@ public record BookRequestDTO (
 
         @NotBlank String author,
 
+        @NotBlank String category,
+
         @NotNull Integer quantity,
 
         @NotNull Float price

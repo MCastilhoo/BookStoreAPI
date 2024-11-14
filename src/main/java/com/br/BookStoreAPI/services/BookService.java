@@ -63,6 +63,7 @@ public class BookService {
         result.get().setTitle(bookRequestDTO.title());
         result.get().setPageNumbers(bookRequestDTO.pageNumbers());
         result.get().setAuthor(bookRequestDTO.author());
+        result.get().setCategory(bookRequestDTO.category());
         result.get().setPrice(bookRequestDTO.price());
 
         BookEntity saved = bookRepository.save(result.get());

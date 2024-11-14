@@ -9,6 +9,7 @@ public record BookDetailsResponseDTO(
         String title,
         int pageNumbers,
         String author,
+        String category,
         float price,
         LocalDateTime creationDate,
         LocalDateTime modificationDate
