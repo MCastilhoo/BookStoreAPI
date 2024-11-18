@@ -10,6 +10,7 @@ public class BookFactory {
                 bookEntity.getTitle(),
                 bookEntity.getPageNumbers(),
                 bookEntity.getAuthor(),
+                bookEntity.getCategory(),
                 bookEntity.getPrice(),
                 bookEntity.getCreationDate(),
                 bookEntity.getModificationDate()
