@@ -25,6 +25,9 @@ public class SaleEntity {
     @Column(name = "TOTAL_PRICE", nullable = false)
     private Double totalPrice;
 
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+    private List<DetailsSaleEntity> details;
+
     @Column(name = "SELL_DATE")
     private LocalDateTime sellDate;
 }

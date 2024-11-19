@@ -1,4 +1,8 @@
 package com.br.BookStoreAPI.models.DTOs.salesDTOs;
 
-public record SaleRequestDTO(Long bookId, Integer quantityPurchased) {
+import com.br.BookStoreAPI.models.DTOs.DetailsSaleDTOs.DetailsSaleRequestDTO;
+
+import java.util.List;
+
+public record SaleRequestDTO(List<DetailsSaleRequestDTO> books) {
 }

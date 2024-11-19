@@ -28,8 +28,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         try {
-            LoginResponseDTO reponse = authService.login(loginRequestDTO);
-            return ResponseEntity.ok(reponse);
+            LoginResponseDTO response = authService.login(loginRequestDTO);
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDTO(e.getMessage()));
         }

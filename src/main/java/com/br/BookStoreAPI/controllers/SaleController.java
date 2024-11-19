@@ -22,9 +22,8 @@ public class SaleController {
     @PostMapping
     public ResponseEntity<Object> createSale(@Valid @RequestBody SaleRequestDTO saleRequestDTO) {
         try {
-            Long userId = saleService.extractUserIdFromToken();
-            SaleResponseDTO responseDTO = saleService.createSale(saleRequestDTO, userId);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Sale launched successfully!");
+            SaleResponseDTO responseDTO = saleService.createSale(saleRequestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Sale completed successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
