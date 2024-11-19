@@ -116,14 +116,6 @@ public class UserService {
         return true;
     }
 
-//    public Optional<UserEntity> getUserByEmail(String userEmail) {
-//        return userRepository.findByUserEmail(userEmail);
-//    }
-//
-//    public RoleEntity getRoleByName(String roleName) {
-//        return roleRepository.findByRoleName(roleName);
-//    }
-
     private UserEntity getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {

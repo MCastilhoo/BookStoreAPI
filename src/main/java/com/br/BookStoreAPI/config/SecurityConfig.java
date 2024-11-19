@@ -49,7 +49,7 @@ public class SecurityConfig {
         VerifiedUserFilter verifiedUserFilter = applicationContext.getBean(VerifiedUserFilter.class);
 
         http
-                .addFilterBefore(verifiedUserFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(verifiedUserFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()

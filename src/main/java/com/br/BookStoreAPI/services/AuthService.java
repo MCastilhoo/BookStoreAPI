@@ -45,7 +45,7 @@ public class AuthService {
 
         var claims = JwtClaimsSet.builder()
                 .issuer("teste")
-                .subject(user.getUserEmail())
+                .subject(String.valueOf(user.getUserId()))
                 .expiresAt(now.plusSeconds(expiresIn))
                 .claim("authorization", List.of(role.getRole()))
                 .issuedAt(now)

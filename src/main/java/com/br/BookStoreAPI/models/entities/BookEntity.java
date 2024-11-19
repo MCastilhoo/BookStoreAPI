@@ -42,7 +42,7 @@ public class BookEntity {
 
     @NotNull
     @Column(name = "PRICE")
-    private Float price;
+    private Double price;
 
 
     @Column(name = "CREATION_DATE")
