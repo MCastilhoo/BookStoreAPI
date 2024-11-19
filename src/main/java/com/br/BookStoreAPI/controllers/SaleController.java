@@ -24,7 +24,7 @@ public class SaleController {
         try {
             Long userId = saleService.extractUserIdFromToken();
             SaleResponseDTO responseDTO = saleService.createSale(saleRequestDTO, userId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Sale launched successfully!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {

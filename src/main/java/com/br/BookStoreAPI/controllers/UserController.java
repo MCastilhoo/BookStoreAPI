@@ -28,7 +28,7 @@ public class UserController {
     public ResponseEntity<Object> create(@RequestBody UserRequestDTO dto) {
         try {
             UserResponseDTO responseDTO = userService.create(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully!");
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseDTO(e.getMessage()));
         }
