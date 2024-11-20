@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor
 public enum UserStatus {
-    VERIFIED("V", "Verified"),
-    UNVERIFIED("U", "Unverified"),
-    PENDING("P", "Pending");
+    VERIFIED("Verified", "Verified"),
+    UNVERIFIED("Unverified", "Unverified"),
+    PENDING("Pending", "Pending");
 
     private final String code;
     private final String description;
