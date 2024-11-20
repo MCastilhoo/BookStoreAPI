@@ -55,11 +55,12 @@ public class SaleService {
             if (book.getQuantity() < item.quantityPurchased()) {
                 throw new IllegalArgumentException("Not enough stock for book with id: " + item.bookId());
             }
-
+            int updateQuantity = book.getQuantity() - item.quantityPurchased();
+            book.setQuantity(updateQuantity);
+            bookRepository.save(book);
             DetailsSaleEntity detailsSale = new DetailsSaleEntity();
             detailsSale.setBook(book);
             detailsSale.setQuantityPurchased(item.quantityPurchased());
-
             // Calcular o preço por livro utilizando o novo método
             Double pricePerBook = calculatePricePerBook(book);
             detailsSale.setPricePerBook(pricePerBook);
