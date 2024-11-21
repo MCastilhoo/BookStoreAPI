@@ -56,7 +56,6 @@ public class UserService {
         if (userFromDb.isPresent()) {
             throw new UserAlreadyExistsException("User's email " + dto.userEmail() + " is already in use.");
         }
-
         UserEntity userEntity = new UserEntity();
         userEntity.setUserFirstName(dto.userFirstName());
         userEntity.setUserLastName(dto.userLastName());
@@ -65,15 +64,20 @@ public class UserService {
         userEntity.setRole(role);
         userEntity.setUserStatus(UserStatus.PENDING);
         UserEntity result = userRepository.save(userEntity);
-
         UserVerifierEntity verifier = new UserVerifierEntity();
         verifier.setUser(result);
         verifier.setUuid(UUID.randomUUID());
         verifier.setExpriation(Instant.now().plusSeconds(3600));
         userVerifyRepository.save(verifier);
-        emailService.sendEmail(dto.userEmail(),
-                "Código de confirmação:",
-                "Seu código é: " + verifier.getUuid());
+        String verificationUrl = "http://localhost:8080/api/users/authenticate/" + verifier.getUuid();
+        emailService.sendEmail(
+                dto.userEmail(),
+                "Verificação de Conta",
+                "Olá, " + dto.userFirstName() + ",\n\n" +
+                        "Por favor, clique no link abaixo para verificar sua conta:\n" +
+                        verificationUrl + "\n\n"
+        );
+
         return new UserResponseDTO(result);
     }
 
