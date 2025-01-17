@@ -1,7 +1,7 @@
 package com.br.BookStoreAPI.services;
 
 import com.br.BookStoreAPI.factories.UserFactory;
-import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
+import com.br.BookStoreAPI.exceptions.CustomException;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
@@ -15,7 +15,6 @@ import com.br.BookStoreAPI.utils.enums.RoleType;
 import com.br.BookStoreAPI.utils.enums.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,11 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService {
@@ -61,30 +59,48 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public UserResponseDTO create(UserRequestDTO dto) {
         var role = roleRepository.findByRoleName(RoleType.USER.name());
+
+        // Verificar se o usuário já existe
         if (userRepository.findByUserEmail(dto.userEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("User's email " + dto.userEmail() + " is already in use.");
+            throw new IllegalArgumentException("User's email " + dto.userEmail() + " is already in use.");
         }
+
+        // Validar a requisição (como validar a senha, etc)
         validateUserRequest(dto);
+
+        // Preparar a entidade do usuário
         UserEntity userEntity = prepareUserEntity(dto, role);
+
+        // Salvar o usuário no banco de dados
         UserEntity savedUser = userRepository.save(userEntity);
+
+        // Assincronamente, você pode enviar o e-mail ou realizar outras ações
         CompletableFuture.runAsync(() -> {
             try {
                 UserVerifierEntity verifier = createUserVerifier(savedUser);
                 userVerifyRepository.save(verifier);
-
                 String verificationUrl = "http://localhost:8080/api/users/authenticate/" + verifier.getUuid();
-                emailService.sendEmail(
-                        dto.userEmail(),
-                        "Verificação de Conta",
-                        buildVerificationEmail(dto.userFirstName(), verificationUrl)
-                );
+                emailService.sendEmail(dto.userEmail(), "Verificação de Conta", buildVerificationEmail(dto.userFirstName(), verificationUrl));
             } catch (Exception e) {
                 logger.error("Erro no processamento assíncrono de criação de usuário", e);
             }
         });
 
+        // Retornar a resposta com o usuário salvo
         return new UserResponseDTO(savedUser);
     }
+
+
+    private boolean isValidPassword(String password) {
+        String passwordPattern = "^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{8,}$";
+        return Pattern.compile(passwordPattern).matcher(password).matches();
+    }
+
+//    private void validateUserPassword(UserRequestDTO dto) {
+//        if (!isValidPassword(dto.userPassword())){
+//            throw new InvalidPasswordExcpetion("teste");
+//        }
+//    }
 
     private void validateUserRequest(UserRequestDTO dto) {
         if (dto.userFirstName() == null || dto.userFirstName().length() < 2) {
@@ -147,7 +163,7 @@ public class UserService {
         // Verificar se novo email já está em uso
         Optional<UserEntity> existingUser = userRepository.findByUserEmail(userRequestDTO.userEmail());
         if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
-            throw new UserAlreadyExistsException("Email already in use");
+            throw new IllegalArgumentException("Email already in use");
         }
 
         // Validar request

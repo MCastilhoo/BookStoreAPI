@@ -1,6 +1,6 @@
 package com.br.BookStoreAPI.controllers;
 
-import com.br.BookStoreAPI.models.DTOs.errorsDTOs.ErrorResponseDTO;
+import com.br.BookStoreAPI.exceptions.GlobalExceptionHandler;
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginResponseDTO;
 import com.br.BookStoreAPI.services.AuthService;
@@ -33,7 +33,7 @@ public class AuthController {
             LoginResponseDTO response = authService.login(loginRequestDTO);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDTO(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new GlobalExceptionHandler());
         }
     }
 }

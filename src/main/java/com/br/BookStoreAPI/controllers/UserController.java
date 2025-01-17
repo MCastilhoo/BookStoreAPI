@@ -1,8 +1,6 @@
 package com.br.BookStoreAPI.controllers;
 
 
-import com.br.BookStoreAPI.globalExceptions.UserAlreadyExistsException;
-import com.br.BookStoreAPI.models.DTOs.errorsDTOs.ErrorResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.userDTOs.UserResponseDTO;
@@ -24,14 +22,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> create(@RequestBody UserRequestDTO dto) {
-        try {
-            UserResponseDTO responseDTO = userService.create(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully!");
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseDTO(e.getMessage()));
-        }
+    public ResponseEntity<Object> create(@RequestBody @Valid UserRequestDTO dto) {
+        // Chama o serviço para criar o usuário
+        UserResponseDTO responseDTO = userService.create(dto);
+
+        // Retorna a resposta com status CREATED e uma mensagem de sucesso
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully!");
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO>get(@PathVariable(value = "id") Long id) {
         UserResponseDTO result = userService.getUserById(id);
