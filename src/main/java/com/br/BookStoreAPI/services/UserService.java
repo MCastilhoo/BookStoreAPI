@@ -60,21 +60,16 @@ public class UserService {
     public UserResponseDTO create(UserRequestDTO dto) {
         var role = roleRepository.findByRoleName(RoleType.USER.name());
 
-        // Verificar se o usuário já existe
         if (userRepository.findByUserEmail(dto.userEmail()).isPresent()) {
             throw new IllegalArgumentException("User's email " + dto.userEmail() + " is already in use.");
         }
 
-        // Validar a requisição (como validar a senha, etc)
         validateUserRequest(dto);
 
-        // Preparar a entidade do usuário
         UserEntity userEntity = prepareUserEntity(dto, role);
 
-        // Salvar o usuário no banco de dados
         UserEntity savedUser = userRepository.save(userEntity);
 
-        // Assincronamente, você pode enviar o e-mail ou realizar outras ações
         CompletableFuture.runAsync(() -> {
             try {
                 UserVerifierEntity verifier = createUserVerifier(savedUser);
@@ -86,7 +81,6 @@ public class UserService {
             }
         });
 
-        // Retornar a resposta com o usuário salvo
         return new UserResponseDTO(savedUser);
     }
 
@@ -156,20 +150,16 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO update(UserRequestDTO userRequestDTO, Long userId) {
-        // Verificar se usuário existe
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // Verificar se novo email já está em uso
         Optional<UserEntity> existingUser = userRepository.findByUserEmail(userRequestDTO.userEmail());
         if (existingUser.isPresent() && !existingUser.get().getUserId().equals(userId)) {
             throw new IllegalArgumentException("Email already in use");
         }
 
-        // Validar request
         validateUserRequest(userRequestDTO);
 
-        // Atualizar campos
         userEntity.setUserFirstName(userRequestDTO.userFirstName());
         userEntity.setUserLastName(userRequestDTO.userLastName());
         userEntity.setUserEmail(userRequestDTO.userEmail());
@@ -184,7 +174,6 @@ public class UserService {
         UserEntity currentUser = getCurrentUser();
         var adminRole = roleRepository.findByRoleName(RoleType.ADMIN.name());
 
-        // Verificar permissões
         if (!currentUser.getRole().equals(adminRole)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to delete users");
         }

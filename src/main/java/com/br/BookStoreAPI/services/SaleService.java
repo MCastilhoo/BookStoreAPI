@@ -61,7 +61,6 @@ public class SaleService {
             DetailsSaleEntity detailsSale = new DetailsSaleEntity();
             detailsSale.setBook(book);
             detailsSale.setQuantityPurchased(item.quantityPurchased());
-            // Calcular o preço por livro utilizando o novo método
             Double pricePerBook = calculatePricePerBook(book);
             detailsSale.setPricePerBook(pricePerBook);
 
@@ -77,9 +76,7 @@ public class SaleService {
         return new SaleResponseDTO(savedSale);
     }
 
-    // Método para calcular o preço por livro
     private Double calculatePricePerBook(BookEntity book) {
-        // Aqui você pode fazer algum processamento ou aplicar lógica de desconto, por exemplo
         return book.getPrice();
     }
 
