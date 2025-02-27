@@ -30,17 +30,14 @@ public class AuthService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginDTO) {
-        // Busca o usuário pelo e-mail
         var userOpt = userRepository.findByUserEmail(loginDTO.userEmail());
-
-        // Verifica se o usuário existe e se a senha está correta
         if (userOpt.isEmpty() || !passwordEncoder.matches(loginDTO.password(), userOpt.get().getUserPassword())) {
             throw new BadCredentialsException("Invalid user email or password");
         }
 
         UserEntity user = userOpt.get();
         var now = Instant.now();
-        var expiresIn = 300L; // Expiração do token em segundos
+        var expiresIn = 300L;
         var role = user.getRole();
 
         var claims = JwtClaimsSet.builder()

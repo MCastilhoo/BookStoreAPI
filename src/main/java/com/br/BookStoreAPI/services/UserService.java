@@ -75,7 +75,7 @@ public class UserService {
                 UserVerifierEntity verifier = createUserVerifier(savedUser);
                 userVerifyRepository.save(verifier);
                 String verificationUrl = "http://localhost:8080/api/users/authenticate/" + verifier.getUuid();
-                emailService.sendEmail(dto.userEmail(), "Verificação de Conta", buildVerificationEmail(dto.userFirstName(), verificationUrl));
+                emailService.sendEmail(dto.userEmail(), "Verificação de Conta", buildVerificationEmail(dto.firstName(), verificationUrl));
             } catch (Exception e) {
                 logger.error("Erro no processamento assíncrono de criação de usuário", e);
             }
@@ -97,20 +97,20 @@ public class UserService {
 //    }
 
     private void validateUserRequest(UserRequestDTO dto) {
-        if (dto.userFirstName() == null || dto.userFirstName().length() < 2) {
+        if (dto.firstName() == null || dto.firstName().length() < 2) {
             throw new IllegalArgumentException("Nome inválido");
         }
-        if (dto.userPassword() == null || dto.userPassword().length() < 8) {
+        if (dto.password() == null || dto.password().length() < 8) {
             throw new IllegalArgumentException("Senha deve ter no mínimo 8 caracteres");
         }
     }
 
     private UserEntity prepareUserEntity(UserRequestDTO dto, RoleEntity role) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setUserFirstName(dto.userFirstName());
-        userEntity.setUserLastName(dto.userLastName());
+        userEntity.setUserFirstName(dto.firstName());
+        userEntity.setUserLastName(dto.lastName());
         userEntity.setUserEmail(dto.userEmail());
-        userEntity.setUserPassword(bCryptPasswordEncoder.encode(dto.userPassword()));
+        userEntity.setUserPassword(bCryptPasswordEncoder.encode(dto.password()));
         userEntity.setRole(role);
         userEntity.setUserStatus(UserStatus.PENDING);
         return userEntity;
@@ -138,9 +138,11 @@ public class UserService {
 
     public Page<UserDetailsResponseDTO> getAll(Pageable pageable) {
         UserEntity currentUser = getCurrentUser();
+        if (currentUser == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "This user aren't authenticated");
+        }
         var adminRole = roleRepository.findByRoleName(RoleType.ADMIN.name());
-
-        if (!currentUser.getRole().equals(adminRole)) {
+        if (!currentUser.getRole().getRoleId().equals(adminRole.getRoleId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
         }
 
@@ -160,10 +162,10 @@ public class UserService {
 
         validateUserRequest(userRequestDTO);
 
-        userEntity.setUserFirstName(userRequestDTO.userFirstName());
-        userEntity.setUserLastName(userRequestDTO.userLastName());
+        userEntity.setUserFirstName(userRequestDTO.firstName());
+        userEntity.setUserLastName(userRequestDTO.lastName());
         userEntity.setUserEmail(userRequestDTO.userEmail());
-        userEntity.setUserPassword(bCryptPasswordEncoder.encode(userRequestDTO.userPassword()));
+        userEntity.setUserPassword(bCryptPasswordEncoder.encode(userRequestDTO.password()));
 
         UserEntity updatedUser = userRepository.save(userEntity);
         return new UserResponseDTO(updatedUser);
@@ -192,8 +194,8 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
 
-        String currentUserEmail = auth.getName();
-        return userRepository.findByUserEmail(currentUserEmail)
+        String currentUserId = auth.getName();
+        return userRepository.findById(Long.parseLong(currentUserId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
@@ -213,7 +215,7 @@ public class UserService {
             user.setUserStatus(UserStatus.UNVERIFIED);
             userRepository.save(user);
             userVerifyRepository.delete(userVerifier);
-            return "Tempo de verificação expirado";
+            return "Verification time expired";
         }
     }
 

@@ -5,13 +5,13 @@ import com.br.BookStoreAPI.models.entities.RoleEntity;
 import jakarta.validation.constraints.NotBlank;
 
 public record UserRequestDTO (
-        @NotBlank String userFirstName,
+        @NotBlank String firstName,
 
-        @NotBlank String userLastName,
+        @NotBlank String lastName,
 
         @NotBlank String userEmail,
 
-        @NotBlank String userPassword,
+        @NotBlank String password,
 
         @NotBlank Set<Long> roleIds
 ){}

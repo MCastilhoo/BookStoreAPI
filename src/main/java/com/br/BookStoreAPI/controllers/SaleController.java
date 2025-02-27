@@ -23,7 +23,7 @@ public class SaleController {
     public ResponseEntity<Object> createSale(@Valid @RequestBody SaleRequestDTO saleRequestDTO) {
         try {
             SaleResponseDTO responseDTO = saleService.createSale(saleRequestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Sale completed successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
