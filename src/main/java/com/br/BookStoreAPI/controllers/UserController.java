@@ -34,7 +34,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/auth/{uuid}")
+    @GetMapping("/authenticate/{uuid}")
     public ResponseEntity<Object> authenticate(@PathVariable(value = "uuid") String uuid) {
         try {
             userService.verifyUser(uuid);
