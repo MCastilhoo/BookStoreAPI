@@ -45,6 +45,10 @@ public class AuthService {
                 .subject(String.valueOf(user.getUserId()))
                 .expiresAt(now.plusSeconds(expiresIn))
                 .claim("authorization", List.of(role.getRole()))
+                .claim("firstName", user.getUserFirstName())
+                .claim("lastName",  user.getUserLastName())
+                .claim("email", user.getUserEmail())
+
                 .issuedAt(now)
                 .build();
 

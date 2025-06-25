@@ -74,7 +74,7 @@ public class UserService {
             try {
                 UserVerifierEntity verifier = createUserVerifier(savedUser);
                 userVerifyRepository.save(verifier);
-                String verificationUrl = "http://localhost:8080/api/users/authenticate/" + verifier.getUuid();
+                String verificationUrl = "http://localhost:8080/api/authenticate/" + verifier.getUuid();
                 emailService.sendEmail(dto.userEmail(), "Verificação de Conta", buildVerificationEmail(dto.firstName(), verificationUrl));
             } catch (Exception e) {
                 logger.error("Erro no processamento assíncrono de criação de usuário", e);

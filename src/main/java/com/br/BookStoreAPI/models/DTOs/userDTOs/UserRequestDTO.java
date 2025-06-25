@@ -1,15 +1,15 @@
 package com.br.BookStoreAPI.models.DTOs.userDTOs;
 import java.util.Set;
 
-import com.br.BookStoreAPI.models.entities.RoleEntity;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 public record UserRequestDTO (
         @NotBlank String firstName,
 
         @NotBlank String lastName,
 
-        @NotBlank String userEmail,
+
+        @Email  @NotBlank String userEmail,
 
         @NotBlank String password,
 
