@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/authenticate/{uuid}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/genres").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
