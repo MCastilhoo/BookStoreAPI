@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -32,9 +33,13 @@ public class BookEntity {
     @Column(name = "AUTHOR")
     private String author;
 
-    @NotBlank
-    @Column(name = "CATEGORY")
-    private String category;
+    @ManyToMany
+    @JoinTable(
+            name = "BOOK_GENRE",
+            joinColumns = @JoinColumn(name = "BOOK_ID"),
+            inverseJoinColumns = @JoinColumn(name = "GENRE_ID")
+    )
+    private Set<GenreEntity> genres;
 
     @NotBlank
     @Column(name = "QUANTITY")

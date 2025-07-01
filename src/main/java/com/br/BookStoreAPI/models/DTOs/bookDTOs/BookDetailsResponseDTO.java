@@ -2,6 +2,7 @@ package com.br.BookStoreAPI.models.DTOs.bookDTOs;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record BookDetailsResponseDTO(
 
@@ -9,7 +10,7 @@ public record BookDetailsResponseDTO(
         String title,
         int pageNumbers,
         String author,
-        String category,
+        List<String> genres,
         Double price,
         LocalDateTime creationDate,
         LocalDateTime modificationDate

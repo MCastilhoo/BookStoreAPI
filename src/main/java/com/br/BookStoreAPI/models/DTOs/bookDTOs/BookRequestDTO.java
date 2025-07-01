@@ -3,6 +3,8 @@ package com.br.BookStoreAPI.models.DTOs.bookDTOs;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Set;
+
 public record BookRequestDTO (
 
         @NotBlank String title,
@@ -11,11 +13,11 @@ public record BookRequestDTO (
 
         @NotBlank String author,
 
-        @NotBlank String category,
-
         @NotNull Integer quantity,
 
-        @NotNull Double price
+        @NotNull Double price,
+
+        Set<Long> genreIds
 
 
 ){}
