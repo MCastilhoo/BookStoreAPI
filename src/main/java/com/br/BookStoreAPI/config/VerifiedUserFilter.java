@@ -9,19 +9,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Security;
 
 @Component
 public class VerifiedUserFilter extends OncePerRequestFilter {
-
     @Autowired
     private ApplicationContext applicationContext;
-
     private UserService userService;
 
     private UserService getUserService() {
@@ -32,28 +34,33 @@ public class VerifiedUserFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String email = getEmailFromContext();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+       String email = getEmailFromContext();
 
-        if (email != null) {
-            UserService service = getUserService();
-            UserEntity user = service.findByEmail(email);
+       if (email != null) {
+           UserService userService = getUserService();
+           UserEntity userEntity = userService.findByEmail(email);
 
-            if (user == null || user.getUserStatus() != UserStatus.VERIFIED) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: User not verified");
-                return;
-            }
-        }
-
-        filterChain.doFilter(request, response);
+           if (userEntity == null || userEntity.getUserStatus() != UserStatus.VERIFIED){
+               response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+               response.setContentType("application/json");
+               response.getWriter().write("{\"error\": \"User not verified\", \"message\": \"Check your email to activate account.\"}");
+               return;
+           }
+       }
+       filterChain.doFilter(request, response);
     }
-
     private String getEmailFromContext() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof Jwt) {
+                return ((Jwt) principal).getClaimAsString("sub");
+            } else if (principal instanceof UserDetails) {
+                return ((UserDetails) principal).getUsername();
+            }
         }
         return null;
     }

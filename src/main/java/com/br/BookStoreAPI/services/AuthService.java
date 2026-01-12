@@ -5,8 +5,10 @@ import com.br.BookStoreAPI.models.DTOs.loginDTOs.LoginResponseDTO;
 import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.UserRepository;
 import com.br.BookStoreAPI.repositories.UserVerifyRepository;
+import com.br.BookStoreAPI.utils.enums.UserStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class AuthService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginDTO) {
+
         var userOpt = userRepository.findByUserEmail(loginDTO.userEmail());
         if (userOpt.isEmpty() || !passwordEncoder.matches(loginDTO.password(), userOpt.get().getUserPassword())) {
             throw new BadCredentialsException("Invalid user email or password");
@@ -39,6 +42,10 @@ public class AuthService {
         var now = Instant.now();
         var expiresIn = 300L;
         var role = user.getRole();
+
+        if (user.getUserStatus() != UserStatus.VERIFIED) {
+            throw new DisabledException("User not authenticated");
+        }
 
         var claims = JwtClaimsSet.builder()
                 .issuer("teste")
