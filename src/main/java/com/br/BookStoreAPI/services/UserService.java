@@ -90,12 +90,6 @@ public class UserService {
         return Pattern.compile(passwordPattern).matcher(password).matches();
     }
 
-//    private void validateUserPassword(UserRequestDTO dto) {
-//        if (!isValidPassword(dto.userPassword())){
-//            throw new InvalidPasswordExcpetion("teste");
-//        }
-//    }
-
     private void validateUserRequest(UserRequestDTO dto) {
         if (dto.firstName() == null || dto.firstName().length() < 2) {
             throw new IllegalArgumentException("Nome inválido");
