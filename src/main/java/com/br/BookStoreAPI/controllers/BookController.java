@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,13 +24,13 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @PostMapping()
-    public ResponseEntity<Object> create(@RequestBody @Valid BookRequestDTO dto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> create(@RequestPart("book") @Valid BookRequestDTO dto, @RequestPart("bookCover")MultipartFile image) {
         try {
-            BookResponseDTO bookResponseDTO = bookService.create(dto);
+            BookResponseDTO bookResponseDTO = bookService.create(dto, image);
             return ResponseEntity.status(HttpStatus.CREATED).body(bookResponseDTO);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new GlobalExceptionHandler());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating a book.");
         }
     }
 

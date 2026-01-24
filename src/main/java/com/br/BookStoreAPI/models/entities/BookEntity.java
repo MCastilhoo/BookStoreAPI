@@ -21,6 +21,9 @@ public class BookEntity {
     @Column(name = "BOOK_ID")
     private Long bookId;
 
+    @Column(name = "BOOK_COVER")
+    private String bookCover;
+
     @NotBlank
     @Column(name = "TITLE")
     private String title;
@@ -55,6 +58,7 @@ public class BookEntity {
 
     @Column(name = "MODIFICATION_DATE")
     private LocalDateTime modificationDate;
+
 
     @PrePersist
     protected void onCreate() {creationDate = LocalDateTime.now();}

@@ -14,11 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +31,25 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
     private GenreRepository genreRepository;
+    private final Path rootLocation = Paths.get("uploads");
 
     public BookService(BookRepository bookRepository, GenreRepository genreRepository) {
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
     }
 
-    public BookResponseDTO create(BookRequestDTO bookRequestDTO) {
+    public BookResponseDTO create(BookRequestDTO bookRequestDTO, MultipartFile image) throws IOException {
+        if (image != null && !image.isEmpty()) {
+            Files.createDirectories(rootLocation);
+            String bookCover = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+            Path destination = rootLocation.resolve(bookCover)
+                    .normalize().toAbsolutePath();
+            try (InputStream inputStream = image.getInputStream()) {
+                Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new IOException("Failed to save image " + bookCover + " to " + destination, e);
+            }
+        }
         if (bookRequestDTO.price() == null || bookRequestDTO.price() <= 0){
             throw new IllegalArgumentException("O livro não pode ser cadastrado sem preço ou com preço negativo");
         }
