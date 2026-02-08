@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,33 +30,27 @@ import java.util.stream.Collectors;
 public class BookService {
 
     @Autowired
+
     private BookRepository bookRepository;
     private GenreRepository genreRepository;
-    private final Path rootLocation = Paths.get("uploads");
+    private CloudinaryService cloudinaryService;
 
-    public BookService(BookRepository bookRepository, GenreRepository genreRepository) {
+    public BookService(BookRepository bookRepository, GenreRepository genreRepository, CloudinaryService cloudinaryService) {
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
+    @Transactional
     public BookResponseDTO create(BookRequestDTO bookRequestDTO, MultipartFile image) throws IOException {
-        if (image != null && !image.isEmpty()) {
-            Files.createDirectories(rootLocation);
-            String bookCover = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
-            Path destination = rootLocation.resolve(bookCover)
-                    .normalize().toAbsolutePath();
-            try (InputStream inputStream = image.getInputStream()) {
-                Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new IOException("Failed to save image " + bookCover + " to " + destination, e);
-            }
-        }
         if (bookRequestDTO.price() == null || bookRequestDTO.price() <= 0){
             throw new IllegalArgumentException("O livro não pode ser cadastrado sem preço ou com preço negativo");
         }
         if (bookRequestDTO.quantity() == null || bookRequestDTO.quantity() <= 0){
             throw new IllegalArgumentException("O livro não pode ser cadastrado sem nenhuma quantidade no estoque");
         }
+        String imageUrl = cloudinaryService.uploadImage(image);
+
         BookEntity book = new BookEntity();
         if (bookRequestDTO.genreIds()!=null && !bookRequestDTO.genreIds().isEmpty()){
             Set<GenreEntity> genres = new HashSet<>(genreRepository.findAllById(bookRequestDTO.genreIds()));
@@ -64,6 +59,7 @@ public class BookService {
             }
             book.setGenres(genres);
         }
+        book.setBookCover(imageUrl);
         BeanUtils.copyProperties(bookRequestDTO, book);
         BookEntity result = bookRepository.save(book);
 
