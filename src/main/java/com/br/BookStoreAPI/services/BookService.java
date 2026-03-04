@@ -66,6 +66,25 @@ public class BookService {
         return new BookResponseDTO(result);
     }
 
+    public List<BookResponseDTO> getBookByTitle(String title) {
+        if (title == null || title.isEmpty()){
+            return Collections.emptyList();
+        }
+        return bookRepository.findByTitleContainingIgnoreCase(title)
+                .stream()
+                .map(BookResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookResponseDTO> getBookByAuthor(String author) {
+        if (author == null || author.isEmpty()){
+            return Collections.emptyList();
+        }
+        return bookRepository.findByAuthorContainingIgnoreCase(author)
+                .stream()
+                .map(BookResponseDTO::new)
+                .collect(Collectors.toList());
+    }
     public BookResponseDTO getBookById(Long id) {
         Optional<BookEntity> result = bookRepository.findById(id);
         if (result.isEmpty()) return null;

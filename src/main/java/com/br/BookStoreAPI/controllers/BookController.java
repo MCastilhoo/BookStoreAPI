@@ -46,6 +46,11 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(bookService.getAll(pageable));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<BookResponseDTO>> getBookByTitle(@RequestParam String title) {
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.getBookByTitle(title));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<BookResponseDTO> update(@PathVariable(value = "id") Long id, @RequestBody @Valid BookRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.OK).body(bookService.update(dto, id));
