@@ -9,6 +9,7 @@ public class BookFactory {
     public static BookDetailsResponseDTO CreateDetails(BookEntity bookEntity) {
         return new BookDetailsResponseDTO(
                 bookEntity.getBookId(),
+                bookEntity.getBookCover(),
                 bookEntity.getTitle(),
                 bookEntity.getPageNumbers(),
                 bookEntity.getAuthor(),

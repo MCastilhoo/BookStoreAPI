@@ -21,6 +21,7 @@ public class BookEntity {
     @Column(name = "BOOK_ID")
     private Long bookId;
 
+    @NotNull
     @Column(name = "BOOK_COVER")
     private String bookCover;
 

@@ -7,6 +7,7 @@ import java.util.List;
 public record BookDetailsResponseDTO(
 
         Long bookId,
+        String bookCover,
         String title,
         int pageNumbers,
         String author,
@@ -14,6 +15,7 @@ public record BookDetailsResponseDTO(
         Double price,
         LocalDateTime creationDate,
         LocalDateTime modificationDate
+
 
 ) implements Serializable {
 }
