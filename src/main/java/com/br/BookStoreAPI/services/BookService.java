@@ -66,22 +66,17 @@ public class BookService {
         return new BookResponseDTO(result);
     }
 
-    public List<BookResponseDTO> getBookByTitle(String title) {
-        if (title == null || title.isEmpty()){
-            return Collections.emptyList();
-        }
-        return bookRepository.findByTitleContainingIgnoreCase(title)
-                .stream()
-                .map(BookResponseDTO::new)
-                .collect(Collectors.toList());
-    }
+    public List<BookResponseDTO> getBooksByFilters(String title, String author){
+        List<BookEntity> results;
 
-    public List<BookResponseDTO> getBookByAuthor(String author) {
-        if (author == null || author.isEmpty()){
-            return Collections.emptyList();
+        if(title != null && !title.isEmpty()){
+            results = bookRepository.findByTitleContainingIgnoreCase(title);
+        } else if (author != null && !author.isEmpty()){
+            results = bookRepository.findByAuthorContainingIgnoreCase(author);
+        } else {
+            results = Collections.emptyList();
         }
-        return bookRepository.findByAuthorContainingIgnoreCase(author)
-                .stream()
+        return results.stream()
                 .map(BookResponseDTO::new)
                 .collect(Collectors.toList());
     }

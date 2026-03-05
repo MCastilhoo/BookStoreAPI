@@ -34,12 +34,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BookResponseDTO> getById(@PathVariable Long id) {
-        BookResponseDTO responseDTO = bookService.getBookById(id);
-        if(responseDTO == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-    }
+
 
     @GetMapping
     public ResponseEntity<List<BookDetailsResponseDTO>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -47,8 +42,17 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookResponseDTO>> getBookByTitle(@RequestParam String title) {
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.getBookByTitle(title));
+    public ResponseEntity<List<BookResponseDTO>> getBookByTitle(@RequestParam(value = "title", required = false) String title,
+                                                                @RequestParam(value = "author", required = false) String author) {
+        List<BookResponseDTO> books = bookService.getBooksByFilters(title, author);
+        return ResponseEntity.status(HttpStatus.OK).body(books);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookResponseDTO> getById(@PathVariable Long id) {
+        BookResponseDTO responseDTO = bookService.getBookById(id);
+        if(responseDTO == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
     @PutMapping("/{id}")
@@ -56,7 +60,7 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(bookService.update(dto, id));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/id")
     public ResponseEntity<BookResponseDTO> delete(@PathVariable (value = "id") Long id) {
         if(bookService.delete(id)){
             return ResponseEntity.status(HttpStatus.OK).body(null);
