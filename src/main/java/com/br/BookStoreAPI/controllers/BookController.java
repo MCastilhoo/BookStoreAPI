@@ -42,9 +42,8 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookResponseDTO>> getBookByTitle(@RequestParam(value = "title", required = false) String title,
-                                                                @RequestParam(value = "author", required = false) String author) {
-        List<BookResponseDTO> books = bookService.getBooksByFilters(title, author);
+    public ResponseEntity<List<BookResponseDTO>> getBookByTitle(@RequestParam(value = "q", required = false) String q) {
+        List<BookResponseDTO> books = bookService.getBooksByFilters(q);
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 

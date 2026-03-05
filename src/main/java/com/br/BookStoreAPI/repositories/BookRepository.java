@@ -8,7 +8,5 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
-    List<BookEntity> findByTitleContainingIgnoreCase(String title);
-
-    List<BookEntity> findByAuthorContainingIgnoreCase (String author);
+    List<BookEntity> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
 }

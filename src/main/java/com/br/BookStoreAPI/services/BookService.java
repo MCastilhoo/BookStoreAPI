@@ -1,6 +1,7 @@
 package com.br.BookStoreAPI.services;
 
 
+import com.br.BookStoreAPI.exceptions.CustomException;
 import com.br.BookStoreAPI.factories.BookFactory;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookRequestDTO;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,16 +68,14 @@ public class BookService {
         return new BookResponseDTO(result);
     }
 
-    public List<BookResponseDTO> getBooksByFilters(String title, String author){
-        List<BookEntity> results;
+    public List<BookResponseDTO> getBooksByFilters(String q) {
+        List<BookEntity> results = bookRepository
+                .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(q, q);
 
-        if(title != null && !title.isEmpty()){
-            results = bookRepository.findByTitleContainingIgnoreCase(title);
-        } else if (author != null && !author.isEmpty()){
-            results = bookRepository.findByAuthorContainingIgnoreCase(author);
-        } else {
-            results = Collections.emptyList();
+        if (results.isEmpty()) {
+            throw new CustomException("Nenhum livro encontrado.", HttpStatus.NOT_FOUND);
         }
+
         return results.stream()
                 .map(BookResponseDTO::new)
                 .collect(Collectors.toList());
