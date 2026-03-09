@@ -68,7 +68,7 @@ public class BookService {
         return new BookResponseDTO(result);
     }
 
-    public List<BookResponseDTO> getBooksByFilters(String q) {
+    public List<BookDetailsResponseDTO> getBooksByFilters(String q) {
         List<BookEntity> results = bookRepository
                 .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(q, q);
 
@@ -77,7 +77,7 @@ public class BookService {
         }
 
         return results.stream()
-                .map(BookResponseDTO::new)
+                .map(BookFactory::CreateDetails)
                 .collect(Collectors.toList());
     }
     public BookResponseDTO getBookById(Long id) {

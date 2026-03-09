@@ -1,5 +1,4 @@
 package com.br.BookStoreAPI.models.entities;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
