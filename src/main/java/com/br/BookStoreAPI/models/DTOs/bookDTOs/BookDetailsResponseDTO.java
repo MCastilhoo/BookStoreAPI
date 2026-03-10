@@ -13,6 +13,7 @@ public record BookDetailsResponseDTO(
         String author,
         List<String> genres,
         Double price,
+        String slug,
         LocalDateTime creationDate,
         LocalDateTime modificationDate
 

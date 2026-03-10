@@ -19,6 +19,7 @@ public class BookFactory {
                         .collect(Collectors.toList()),
 
                 bookEntity.getPrice(),
+                bookEntity.getSlug(),
                 bookEntity.getCreationDate(),
                 bookEntity.getModificationDate()
         );

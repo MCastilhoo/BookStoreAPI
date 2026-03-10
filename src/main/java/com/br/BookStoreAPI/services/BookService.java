@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
+import java.awt.print.Book;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -84,6 +86,12 @@ public class BookService {
         Optional<BookEntity> result = bookRepository.findById(id);
         if (result.isEmpty()) return null;
         return new BookResponseDTO(result.get());
+    }
+
+    public BookDetailsResponseDTO getBookDetailsBySlug(String slug){
+        return bookRepository.findBySlug(slug)
+                .map(BookFactory::CreateDetails)
+                .orElseThrow();
     }
 
     public List<BookDetailsResponseDTO> getAll(Pageable pageable) {

@@ -1,4 +1,5 @@
 package com.br.BookStoreAPI.models.entities;
+import com.br.BookStoreAPI.utils.SlugUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -59,10 +60,14 @@ public class BookEntity {
     @Column(name = "MODIFICATION_DATE")
     private LocalDateTime modificationDate;
 
+    @Column(name = "SLUG")
+    private String slug;
+
 
     @PrePersist
-    protected void onCreate() {creationDate = LocalDateTime.now();}
+    protected void onCreate() {creationDate = LocalDateTime.now(); this.slug = SlugUtils.makeSlug(this.title);}
 
     @PreUpdate
     protected void onUpdate() {modificationDate = LocalDateTime.now();}
+
 }

@@ -5,6 +5,8 @@ import com.br.BookStoreAPI.exceptions.GlobalExceptionHandler;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookResponseDTO;
+import com.br.BookStoreAPI.models.entities.BookEntity;
+import com.br.BookStoreAPI.repositories.BookRepository;
 import com.br.BookStoreAPI.services.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import java.util.List;
 public class BookController {
     @Autowired
     private BookService bookService;
+    @Autowired
+    private BookRepository bookRepository;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> create(@RequestPart("book") @Valid BookRequestDTO dto, @RequestPart("bookCover")MultipartFile image) {
@@ -34,8 +38,6 @@ public class BookController {
         }
     }
 
-
-
     @GetMapping
     public ResponseEntity<List<BookDetailsResponseDTO>> getAll(@PageableDefault(page = 0, size = 10) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(bookService.getAll(pageable));
@@ -45,6 +47,12 @@ public class BookController {
     public ResponseEntity<List<BookDetailsResponseDTO>> searchBooks(@RequestParam(value = "q", required = false) String q) {
         List<BookDetailsResponseDTO> books = bookService.getBooksByFilters(q);
         return ResponseEntity.status(HttpStatus.OK).body(books);
+    }
+
+    @GetMapping("/livro/{slug}")
+    public ResponseEntity<BookDetailsResponseDTO>getBookBySlug(@PathVariable("slug") String slug) {
+        BookDetailsResponseDTO book = bookService.getBookDetailsBySlug(slug);
+        return ResponseEntity.status(HttpStatus.OK).body(book);
     }
 
     @GetMapping("/{id}")
