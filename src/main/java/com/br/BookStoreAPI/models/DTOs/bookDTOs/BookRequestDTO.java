@@ -11,6 +11,8 @@ public record BookRequestDTO (
 
         @NotNull int pageNumbers,
 
+        @NotBlank String synopsis,
+
         @NotBlank String author,
 
         @NotNull Integer quantity,
