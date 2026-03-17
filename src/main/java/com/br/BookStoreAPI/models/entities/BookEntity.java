@@ -34,6 +34,11 @@ public class BookEntity {
     private int pageNumbers;
 
     @NotBlank
+    @Column(name = "SYNOPSIS",
+    columnDefinition = "TEXT")
+    private String synopsis;
+
+    @NotBlank
     @Column(name = "AUTHOR")
     private String author;
 
