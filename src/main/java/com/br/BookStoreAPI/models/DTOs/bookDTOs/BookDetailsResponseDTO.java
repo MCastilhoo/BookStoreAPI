@@ -11,6 +11,7 @@ public record BookDetailsResponseDTO(
         String title,
         int pageNumbers,
         String author,
+        String synopsis,
         List<String> genres,
         Double price,
         String slug,
