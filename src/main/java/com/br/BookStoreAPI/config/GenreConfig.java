@@ -21,7 +21,19 @@ public class GenreConfig implements CommandLineRunner {
         if (genreRepository.count() == 0) {
             List<String>genres = List.of(
                     "Aventura",
-                    "Ação"
+                    "Ação",
+                    "Dark Romance",
+                    "Ficcção Científica",
+                    "Fantasia",
+                    "Suspense",
+                    "Terror",
+                    "Biografia",
+                    "Desenvolvimento Pessoal",
+                    "Humor",
+                    "Não-ficção",
+                    "Drama",
+                    "Outros"
+
             );
             genres.forEach(genre -> {
                 if (genreRepository.findByGenre(genre).isEmpty()) {
