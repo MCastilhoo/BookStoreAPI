@@ -53,6 +53,9 @@ public class BookService {
         if (bookRequestDTO.quantity() == null || bookRequestDTO.quantity() <= 0){
             throw new IllegalArgumentException("O livro não pode ser cadastrado sem nenhuma quantidade no estoque");
         }
+        if (bookRequestDTO.synopsis() == null) {
+            throw new IllegalArgumentException("Não podemos criar um livro sem sinopse");
+        }
         String imageUrl = cloudinaryService.uploadImage(image);
 
         BookEntity book = new BookEntity();
