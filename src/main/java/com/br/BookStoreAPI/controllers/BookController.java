@@ -5,9 +5,12 @@ import com.br.BookStoreAPI.exceptions.GlobalExceptionHandler;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookDetailsResponseDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookResponseDTO;
+import com.br.BookStoreAPI.models.DTOs.userFavoriteBooksDTOs.UserFavoriteBooksDetailsResponseDTO;
 import com.br.BookStoreAPI.models.entities.BookEntity;
+import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.BookRepository;
 import com.br.BookStoreAPI.services.BookService;
+import com.br.BookStoreAPI.services.UserFavoriteBooksService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +18,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/books")
@@ -27,6 +33,8 @@ public class BookController {
     private BookService bookService;
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private UserFavoriteBooksService userFavoriteBooksService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> create(@RequestPart("book") @Valid BookRequestDTO dto, @RequestPart("bookCover")MultipartFile image) {
@@ -74,5 +82,19 @@ public class BookController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    @PostMapping("/livro/{slug}/favorite")
+    public ResponseEntity <Object> favorite(@PathVariable(value = "slug") String slug) {
+        UserFavoriteBooksDetailsResponseDTO userFavoriteBooksResponseDTO = userFavoriteBooksService.addFavorite(slug);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userFavoriteBooksResponseDTO);
+    }
+
+    @DeleteMapping("/livro/{slug}/unfavorite")
+    public ResponseEntity <Object> unfavorite(@PathVariable(value = "slug") String slug) {
+        userFavoriteBooksService.unfavorite(slug);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Book successfully removed from favorites!");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
