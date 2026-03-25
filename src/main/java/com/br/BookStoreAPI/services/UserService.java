@@ -182,14 +182,13 @@ public class UserService {
                 .orElse(false);
     }
 
-    private UserEntity getCurrentUser() {
+    public UserEntity getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
-
-        String currentUserId = auth.getName();
-        return userRepository.findById(Long.parseLong(currentUserId))
+        String userEmail = auth.getName();
+        return userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
