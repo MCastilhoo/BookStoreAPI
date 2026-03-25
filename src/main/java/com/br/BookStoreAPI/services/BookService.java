@@ -8,8 +8,10 @@ import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.bookDTOs.BookResponseDTO;
 import com.br.BookStoreAPI.models.entities.BookEntity;
 import com.br.BookStoreAPI.models.entities.GenreEntity;
+import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.BookRepository;
 import com.br.BookStoreAPI.repositories.GenreRepository;
+import com.br.BookStoreAPI.repositories.UserFavoriteBooksRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,11 +40,16 @@ public class BookService {
     private BookRepository bookRepository;
     private GenreRepository genreRepository;
     private CloudinaryService cloudinaryService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserFavoriteBooksRepository userFavoriteBooksRepository;
 
-    public BookService(BookRepository bookRepository, GenreRepository genreRepository, CloudinaryService cloudinaryService) {
+    public BookService(BookRepository bookRepository, GenreRepository genreRepository, CloudinaryService cloudinaryService, UserService userService) {
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
         this.cloudinaryService = cloudinaryService;
+        this.userService = userService;
     }
 
     @Transactional
@@ -92,9 +99,16 @@ public class BookService {
     }
 
     public BookDetailsResponseDTO getBookDetailsBySlug(String slug){
-        return bookRepository.findBySlug(slug)
-                .map(BookFactory::CreateDetails)
-                .orElseThrow();
+        Optional<BookEntity> bookEntity = bookRepository.findBySlug(slug);
+        UserEntity user = userService.getCurrentUser();
+
+        boolean isFavorited = false;
+        if (user != null) {
+            isFavorited =  userFavoriteBooksRepository
+                    .existsByUserUserIdAndBookSlug(user.getUserId(), slug);
+        }
+        return BookFactory.CreateDetails(bookEntity.get(), isFavorited);
+
     }
 
     public List<BookDetailsResponseDTO> getAll(Pageable pageable) {

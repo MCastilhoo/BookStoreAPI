@@ -16,7 +16,8 @@ public record BookDetailsResponseDTO(
         Double price,
         String slug,
         LocalDateTime creationDate,
-        LocalDateTime modificationDate
+        LocalDateTime modificationDate,
+        boolean isFavorited
 
 
 ) implements Serializable {
