@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 public class BookFactory {
     public static BookDetailsResponseDTO CreateDetails(BookEntity bookEntity) {
+        return CreateDetails(bookEntity, false);
+    }
+    public static BookDetailsResponseDTO CreateDetails(BookEntity bookEntity, boolean isFavorited) {
         return new BookDetailsResponseDTO(
                 bookEntity.getBookId(),
                 bookEntity.getBookCover(),
@@ -22,7 +25,8 @@ public class BookFactory {
                 bookEntity.getPrice(),
                 bookEntity.getSlug(),
                 bookEntity.getCreationDate(),
-                bookEntity.getModificationDate()
+                bookEntity.getModificationDate(),
+                isFavorited
         );
     }
 }

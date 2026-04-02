@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.swing.text.html.Option;
 import java.awt.print.Book;
@@ -99,16 +100,13 @@ public class BookService {
     }
 
     public BookDetailsResponseDTO getBookDetailsBySlug(String slug){
-        Optional<BookEntity> bookEntity = bookRepository.findBySlug(slug);
-        UserEntity user = userService.getCurrentUser();
+        BookEntity bookEntity = bookRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum livro encontrado."));
 
-        boolean isFavorited = false;
-        if (user != null) {
-            isFavorited =  userFavoriteBooksRepository
-                    .existsByUserUserIdAndBookSlug(user.getUserId(), slug);
-        }
-        return BookFactory.CreateDetails(bookEntity.get(), isFavorited);
-
+        boolean isFavorited = userService.getOptionalCurrentUser()
+                .map(user -> userFavoriteBooksRepository.existsByUserUserIdAndBookSlug(user.getUserId(), slug))
+                .orElse(false);
+        return BookFactory.CreateDetails(bookEntity, isFavorited);
     }
 
     public List<BookDetailsResponseDTO> getAll(Pageable pageable) {
