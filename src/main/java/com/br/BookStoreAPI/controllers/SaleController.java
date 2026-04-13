@@ -1,7 +1,8 @@
 package com.br.BookStoreAPI.controllers;
 
-import com.br.BookStoreAPI.models.DTOs.salesDTOs.SaleRequestDTO;
-import com.br.BookStoreAPI.models.DTOs.salesDTOs.SaleResponseDTO;
+import com.br.BookStoreAPI.models.DTOs.saleDTOs.SaleRequestDTO;
+import com.br.BookStoreAPI.models.DTOs.saleDTOs.SaleDetailsResponseDTO;
+import com.br.BookStoreAPI.models.entities.SaleEntity;
 import com.br.BookStoreAPI.services.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class SaleController {
     @PostMapping
     public ResponseEntity<Object> createSale(@Valid @RequestBody SaleRequestDTO saleRequestDTO) {
         try {
-            SaleResponseDTO responseDTO = saleService.createSale(saleRequestDTO);
+            SaleEntity responseDTO = saleService.createPendingSale(saleRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

@@ -7,12 +7,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "DETAILS_SALE")
-public class DetailsSaleEntity {
+@Table(name = "HISTORY_SALE")
+public class HistorySaleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DETAIL_SALE_ID")
-    private Long detailSaleId;
+    @Column(name = "HISTORY_ID")
+    private Long historySaleId;
 
     @ManyToOne
     @JoinColumn(name = "SALE_ID")
