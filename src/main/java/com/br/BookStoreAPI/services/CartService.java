@@ -12,9 +12,9 @@ import com.br.BookStoreAPI.repositories.CartRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -46,6 +46,15 @@ public class CartService {
         }
         CartEntity savedCart = cartRepository.save(cart);
         return CartFactory.createDetails(savedCart);
+    }
+
+    public CartDetailsResponseDTO getMyAllItems(){
+        UserEntity user = userService.getCurrentUser();
+        return cartRepository.findByUserUserId(user.getUserId())
+                .map(CartFactory::createDetails)
+                .orElseGet(() -> {
+                    return new CartDetailsResponseDTO(null, user.getUserId(), Collections.emptyList(), 0.0);
+                });
     }
     private CartEntity createNewCart(Long userId){
         UserEntity user = userRepository.findById(userId)
