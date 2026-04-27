@@ -1,9 +1,10 @@
 package com.br.BookStoreAPI.models.DTOs.historySaleDTOs;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public record HistorySaleDetailsResponseDTO(
-        Long historyId,
+        UUID historyId,
         Long bookId,
         String bookTitle,
         Integer quantityPurchased,

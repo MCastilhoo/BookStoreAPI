@@ -8,11 +8,13 @@ import com.br.BookStoreAPI.models.entities.CartEntity;
 import com.br.BookStoreAPI.models.entities.CartItemsEntity;
 import com.br.BookStoreAPI.models.entities.UserEntity;
 import com.br.BookStoreAPI.repositories.BookRepository;
+import com.br.BookStoreAPI.repositories.CartItemRepository;
 import com.br.BookStoreAPI.repositories.CartRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -23,6 +25,7 @@ public class CartService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final UserService userService;
 
     public CartDetailsResponseDTO addItemToCart( CartItemsRequestDTO itemsRequestDTO){
@@ -58,9 +61,18 @@ public class CartService {
     }
     private CartEntity createNewCart(Long userId){
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário com ID " + userId + " não existe"));
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " doesn't exist"));
         CartEntity newCart = new CartEntity();
         newCart.setUser(user);
         return cartRepository.save(newCart);
+    }
+
+    @Transactional
+    public void clearCart(Long userId){
+        CartEntity cart = cartRepository.findByUserUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+        cartItemRepository.deleteByCartCartId(cart.getCartId());
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
     }
 }

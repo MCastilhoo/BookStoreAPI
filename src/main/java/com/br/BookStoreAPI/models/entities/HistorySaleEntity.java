@@ -4,15 +4,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
 @Table(name = "HISTORY_SALE")
 public class HistorySaleEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "HISTORY_ID")
-    private Long historySaleId;
+    private UUID historySaleId;
 
     @ManyToOne
     @JoinColumn(name = "SALE_ID")

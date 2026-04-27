@@ -1,17 +1,16 @@
 package com.br.BookStoreAPI.services;
 
-import com.br.BookStoreAPI.models.DTOs.saleDTOs.SaleRequestDTO;
+import com.br.BookStoreAPI.factories.SaleFactory;
+import com.br.BookStoreAPI.models.DTOs.historySaleDTOs.HistorySaleRequestDTO;
 import com.br.BookStoreAPI.models.DTOs.saleDTOs.SaleDetailsResponseDTO;
-import com.br.BookStoreAPI.models.entities.BookEntity;
-import com.br.BookStoreAPI.models.entities.HistorySaleEntity;
-import com.br.BookStoreAPI.models.entities.SaleEntity;
-import com.br.BookStoreAPI.models.entities.UserEntity;
+import com.br.BookStoreAPI.models.DTOs.saleDTOs.SaleRequestDTO;
+import com.br.BookStoreAPI.models.entities.*;
 import com.br.BookStoreAPI.repositories.BookRepository;
+import com.br.BookStoreAPI.repositories.CartRepository;
 import com.br.BookStoreAPI.repositories.SaleRepository;
 import com.br.BookStoreAPI.repositories.UserRepository;
-import com.br.BookStoreAPI.utils.enums.RoleType;
 import com.br.BookStoreAPI.utils.enums.SaleStatus;
-import org.springframework.security.access.AccessDeniedException;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -19,32 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Service
 public class SaleService {
-
     private final SaleRepository saleRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final HistorySaleService historySaleService;
-
-    public SaleService(SaleRepository saleRepository, BookRepository bookRepository, UserRepository userRepository, HistorySaleService historySaleService) {
-        this.saleRepository = saleRepository;
-        this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
-        this.historySaleService = historySaleService;
-    }
+    private final UserService userService;
+    private final CartRepository cartRepository;
+    private final CartService cartService;
 
     @Transactional
-    public SaleEntity createPendingSale(SaleRequestDTO saleDTO) {
-        Long userId = extractUserIdFromToken();
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
-        RoleType role = user.getRole().getRole();
-        if (!(role.equals(RoleType.ADMIN) || role.equals(RoleType.USER))) {
-            throw new AccessDeniedException("User does not have the required role to perform this operation.");
-        }
+    public SaleDetailsResponseDTO createPendingSale(SaleRequestDTO saleDTO) {
+        UserEntity user = userService.getCurrentUser();
         SaleEntity saleEntity = new SaleEntity();
         saleEntity.setUser(user);
         saleEntity.setStatus(SaleStatus.PENDING);
@@ -64,8 +54,30 @@ public class SaleService {
             totalSalePrice += historySaleEntity.getTotalAmount();
         }
         saleEntity.setTotalPrice(totalSalePrice);
-        return saleRepository.save(saleEntity);
+        SaleEntity savedSale = saleRepository.save(saleEntity);
+        return SaleFactory.CreateDetails(savedSale);
     }
+
+    @Transactional
+    public SaleDetailsResponseDTO checkoutFromCart() {
+        UserEntity user = userService.getCurrentUser();
+        CartEntity cart = cartRepository.findByUserUserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("Cart not found for ID: " + user.getUserId()));
+        if (cart.getCartItems().isEmpty()) {
+            throw new IllegalArgumentException("Cart is empty");
+        }
+        List<HistorySaleRequestDTO> itemsRequest = cart.getCartItems().stream()
+                .map(item -> new HistorySaleRequestDTO(
+                        item.getBook().getBookId(),
+                        item.getQuantity()
+                ))
+                .toList();
+        SaleRequestDTO saleRequest = new SaleRequestDTO(itemsRequest);
+        SaleDetailsResponseDTO response = createPendingSale(saleRequest);
+        cartService.clearCart(user.getUserId());
+        return response;
+    }
+
 
     @Transactional
     public void confirmPayment(UUID saleId, String stripePaymentId){

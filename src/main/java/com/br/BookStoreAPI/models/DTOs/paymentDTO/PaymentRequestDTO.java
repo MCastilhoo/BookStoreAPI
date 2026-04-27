@@ -1,9 +1,9 @@
 package com.br.BookStoreAPI.models.DTOs.paymentDTO;
 
-import java.util.List;
+import java.util.UUID;
 
 public record PaymentRequestDTO(
-        Long saleId
+        UUID saleId
 ) {}
 
 

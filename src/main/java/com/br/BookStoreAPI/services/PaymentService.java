@@ -26,7 +26,7 @@ public class PaymentService {
     }
     public String pay(PaymentRequestDTO paymentRequestDTO) throws StripeException {
         Stripe.apiKey = stripeApiKey;
-        SaleEntity sale = saleRepository.findById(paymentRequestDTO.saleId())
+        SaleEntity sale = saleRepository.findBySaleId(paymentRequestDTO.saleId())
                 .orElseThrow(() -> new IllegalArgumentException("Sale not found"));
         long totalAmount = Math.round(sale.getTotalPrice() * 100);
         PaymentIntentCreateParams paymentParams = PaymentIntentCreateParams.builder()
